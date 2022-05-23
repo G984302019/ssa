@@ -34,7 +34,7 @@ public class GSA implements LocalTransformer {
     public String subject() {
 	return "Optimizatin with efficient question propagation.";
     }
-    private String tmpSymName="_ldpre";
+    private String tmpSymName="_gsa";
     
     public static final int THR=SsaEnvironment.OptThr;
     /** The threshold of debug print **/
@@ -92,12 +92,13 @@ public class GSA implements LocalTransformer {
     	return newNode;
     }
     
-   /**void displayBasicBlk(BasicBlk v) {
+    void displayBasicBlk(BasicBlk v) {
  	   for(BiLink p=v.instrList().first();!p.atEnd();p=p.next()){
         	LirNode node=(LirNode)p.elem();
         	System.out.println(node);
  	   }
-    }**/
+    }
+    
     
     /**
      *s1の左辺とs2の右辺を比較して同じのがないか確認する
@@ -181,25 +182,44 @@ public class GSA implements LocalTransformer {
         BasicBlk v=(BasicBlk)pp.elem();        
         for(BiLink p=v.instrList().first();!p.atEnd();p=p.next()){
         	LirNode node=(LirNode)p.elem();
-             if(node.opCode!=Op.SET) continue;
-             //if(node.kid(1).opCode==Op.MEM) continue;
-        	// System.out.println("== Checking target ==");
-             //System.out.println(node);
-            // System.out.println("== Checking BasicBlk ==");
-            // displayBasicBlk(v);
-
-             
-            
-         	//LirNode newStat = createNewStatement(node);
-         	//p.addBefore(newStat);
-         	
-         	
-        	 /*LirNode pvar = removingLocalRedundancy(p.prev(), node);
-        	 if(pvar!=null) {
-        		 //System.out.println(pvar);
-        		 //node.setKid(1, pvar.makeCopy(env.lir));
-        		// System.out.println(node);
-        	 }*/
+//        	System.out.println(node.kid(0));
+        	if(node.nKids()>1&&node.kid(1).nKids()>0) {
+            	if(node.kid(1).kid(0).opCode==Op.STATIC) {
+            		System.out.println(node.kid(1).kid(0));
+            	}
+        	}
+//        	if(node.opCode==Op.SET) {
+//        		if(node.kid(0).opCode==Op.MEM) {
+//        			System.out.println(node.kid(0).kid(0).kid(0));
+//        		}
+//        	}
+//        		if(node.opCode==Op.SET) {
+//        			System.out.println(node.kid(0));
+//        			if(node.kid(1).nKids()>1) {
+//        				System.out.println(node.kid(1).kid(1));
+//        			}
+//        		}
+        		
+        		
+//             if(node.opCode!=Op.SET) continue;
+//             if(node.kid(1).opCode==Op.MEM) continue;
+//             System.out.println("== Checking target ==");
+//             System.out.println(node);
+//             System.out.println("== Checking BasicBlk ==");
+//             displayBasicBlk(v);
+//
+//             
+//            
+//             LirNode newStat = createNewStatement(node);
+//             p.addBefore(newStat);
+//         	
+//         	
+//        	 LirNode pvar = removingLocalRedundancy(p.prev(), node);
+//        	 if(pvar!=null) {
+//        		 System.out.println(pvar);
+//        		 node.setKid(1, pvar.makeCopy(env.lir));
+//        		 System.out.println(node);
+//        	 }
         }    
     }
     
