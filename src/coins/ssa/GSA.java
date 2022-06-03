@@ -9,6 +9,8 @@ the case where a query reaches uneffective traces of propagated queries is probl
 
 package coins.ssa;
 
+import java.util.Arrays;
+
 //import java.util.Enumeration;
 //import java.util.Hashtable;
 //import java.util.Stack;
@@ -49,6 +51,10 @@ public class GSA implements LocalTransformer {
     private CopyPropagation cpyp;
     MemoryAliasAnalyze alias;
     /*    private Hashtable memArgs;*/
+	int idBound;
+	public boolean[] nDelayed;
+	public boolean[] xDelayed;
+
 
     /**
      * Constructor
@@ -158,7 +164,48 @@ public class GSA implements LocalTransformer {
   	     }
   	   return false;
     }
-         
+    
+    public boolean isSame(BiLink link) {
+		for(BiLink p=link;!p.atEnd();p=p.next()){
+			
+		}
+    }
+    
+	
+	public void compDelayed() {
+		nDelayed = new boolean[idBound];//すべての基本ブロックの数idBoundで初期化
+		xDelayed = new boolean[idBound];
+		Arrays.fill(nDelayed, true);//初期値trueで埋める
+		Arrays.fill(xDelayed, true);
+		boolean change = true;
+		while(change){//Delayedの値に変更があった場合に全部やり直す。
+			boolean same = false;
+			change = false;
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				boolean n = false;
+//				if(nEarliest[blk.id]){//Ealiestかを確認
+//					n = true;
+//				}else 
+				if(blk!=f.flowGraph().entryBlk()){//entryblockだと命令がないため見る必要がないから
+					n = true;
+					for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){//predの命令をひとつづつ見ている
+						BasicBlk pred = (BasicBlk)q.elem();
+						if(!xDelayed[pred.id]){//nDelayをチェック
+							n = false;
+							break;
+						}
+					}
+				}
+				boolean x = n || !same;//xDelayをチェック
+				if(nDelayed[blk.id]!=n || xDelayed[blk.id]!=x) change = true;//xDelay,nDelayに変更があったかチェック
+				nDelayed[blk.id] = n;
+				xDelayed[blk.id] = x;
+			}
+		}
+	}
+	
+	
     public boolean doIt(Function function,ImList args) {
     	
       //
@@ -176,18 +223,22 @@ public class GSA implements LocalTransformer {
 
     // 1/3 
     dfst=(DFST)f.require(DFST.analyzer);
+    idBound =  f.flowGraph().idBound();//idBoundをすべての基本ブロックの数で初期化
     dom=(Dominators)f.require(Dominators.analyzer);
     
     for(BiLink pp=f.flowGraph().basicBlkList.first();!pp.atEnd();pp=pp.next()){
         BasicBlk v=(BasicBlk)pp.elem();        
         for(BiLink p=v.instrList().first();!p.atEnd();p=p.next()){
         	LirNode node=(LirNode)p.elem();
-//        	System.out.println(node.kid(0));
-        	if(node.nKids()>1&&node.kid(1).nKids()>0) {
-            	if(node.kid(1).kid(0).opCode==Op.STATIC) {
-            		System.out.println(node.kid(1).kid(0));
-            	}
-        	}
+        	System.out.println(node);
+        	
+//        	
+        	
+//        	if(node.nKids()>1&&node.kid(1).nKids()>0) {
+//            	if(node.kid(1).kid(0).opCode==Op.STATIC) {
+//            		System.out.println(node.kid(1).kid(0));
+//            	}
+//        	}
 //        	if(node.opCode==Op.SET) {
 //        		if(node.kid(0).opCode==Op.MEM) {
 //        			System.out.println(node.kid(0).kid(0).kid(0));
