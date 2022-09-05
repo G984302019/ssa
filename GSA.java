@@ -137,38 +137,38 @@ public class GSA implements LocalTransformer {
 //    	System.out.println("***********************");
 //    	System.out.println("s1:" + s1);
 //    	System.out.println("s2:" + s2);
-    	if(s1.opCode==Op.SET) {
-    		if(s1.nKids()>0) {
-    			if(s2.nKids()>0) {
-    				if(s2.opCode==Op.SET&&s2.nKids()>1) {
-    					switch(s2.kid(1).opCode) {
-    						case Op.ADD:
-    						case Op.SUB:
-    						case Op.MUL:
-    						case Op.DIVS:
-    							if(s1.kid(0).equals(s2.kid(1).kid(0))||s1.kid(0).equals(s2.kid(1).kid(1))) {
-    								System.out.println(true);
-    								return true;
-    							}
-    						case Op.CONVSX:
-    							if(s1.kid(0).equals(s2.kid(1).kid(0))) {
-    								System.out.println(true);
-    								return true;
-    							}
-    					}
-    					if(s1.kid(0).equals(s2.kid(1))) {
-    						System.out.println(true);
-    						return true;
-    					}
-    				}
-    				if(s2.opCode==Op.CALL&&s2.nKids()>1) {
-    					if(s2.kid(1).nKids()>0) {
-    						if(s1.kid(0).equals(s2.kid(1).kid(0))) {
-    							System.out.println(true);
-    							return true;
-    						}
-    					}
-    				}
+    	if(s2.kid(1).opCode == Op.MEM) {
+    		if(s1.kid(0).equals(s2.kid(1).kid(0))) {
+    			System.out.println(true);
+    			return true;
+    		}
+    	}
+    	if(s2.opCode==Op.SET&&s2.nKids()>1) {
+    		switch(s2.kid(1).opCode) {
+    		case Op.ADD:
+    		case Op.SUB:
+    		case Op.MUL:
+    		case Op.DIVS:
+    			if(s1.kid(0).equals(s2.kid(1).kid(0))||s1.kid(0).equals(s2.kid(1).kid(1))) {
+    				System.out.println(true);
+    				return true;
+    			}
+    		case Op.CONVSX:
+    			if(s1.kid(0).equals(s2.kid(1).kid(0))) {
+    				System.out.println(true);
+    				return true;
+    			}
+    		}
+    		if(s1.kid(0).equals(s2.kid(1))) {
+    			System.out.println(true);
+    			return true;
+    		}
+    	}
+    	if(s2.opCode==Op.CALL&&s2.nKids()>1) {
+    		if(s2.kid(1).nKids()>0) {
+    			if(s1.kid(0).equals(s2.kid(1).kid(0))) {
+    				System.out.println(true);
+    				return true;
     			}
     		}
     	}
@@ -242,12 +242,25 @@ public class GSA implements LocalTransformer {
     
     //そのノードが削除できる可能性があるものなのかを判断するメソッド
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
-		if(node.opCode==Op.CALL)return true;//TODO 局所配列の場合は詳細な解析をするようにする。
+		if(isGlobalInstruction(node)) return false;
+		//TODO 局所配列の場合は詳細な解析をするようにする。
 		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM)return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;
 		return false;
 	}
+    
+    public boolean isGlobalInstruction(LirNode node) {
+    	//TODO グローバル変数の判定を行う
+    	return true;
+    }
+    
+    public boolean isStatic(LirNode node) {
+    	//TODO 命令がStaticな命令なのかを判定。
+    	return true;
+    }
+    
+    //pointerはstaticなものだからそこで判定する。
     
     //LirNodeがnKidsを持たなくなるまで分割する。何のためだ。。。？
     LirNode getAddr(LirNode exp){
@@ -264,7 +277,6 @@ public class GSA implements LocalTransformer {
     //最初にローカルプロパティを全て初期化する。
 	void compLocalProperty(LirNode exp, LirNode addr, ArrayList vars){
 		dce = new boolean[idBound];
-		Arrays.fill(dce, false);
 		xSameAddr = new boolean[idBound];
 		xIsSame = new boolean[idBound];
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
@@ -313,7 +325,7 @@ public class GSA implements LocalTransformer {
 	}
     
 	//変数nDSafe,xDSafeを変更するためのメソッド
-	//変数nDSafeは
+	//変数nDSafeはノード上部のDownSafe
 	//変数xDSafeは
 	public void compDSafe() {
 		nDSafe = new boolean[idBound];
@@ -353,6 +365,7 @@ public class GSA implements LocalTransformer {
 	private void globalCodeMotion(){
 		//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
+		Arrays.fill(dce, false);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
@@ -364,17 +377,21 @@ public class GSA implements LocalTransformer {
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
-				compDCE(node,addr,vars);
+				dce(node,addr,vars);
 //				printGlobalProp(node);
 			}
 		}
 	}
 	
-	public void compDCE(LirNode node, LirNode addr, ArrayList vars) {
+	public void dce(LirNode node, LirNode addr, ArrayList vars) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		//
-        
+		compLocalProperty(node,addr,vars);
+		compDSafe();
+		int exit=f.flowGraph().exitBlk().id;
+		if(nDSafe[exit]&&xDSafe[exit]) {
+			dce[node.id] = true;
+		}
 	}
 	
     public void checkDCE() {
