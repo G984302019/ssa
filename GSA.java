@@ -129,9 +129,6 @@ public class GSA implements LocalTransformer {
 		   BasicBlk v=(BasicBlk)p.elem();
 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
 			   LirNode node=(LirNode)bl.elem();
-			   if(!dce[node.id]) {
-				   System.out.println(node);
-			   }
 		   }
 	   }
 	   System.out.println("-------------------------------------------");
@@ -263,7 +260,7 @@ public class GSA implements LocalTransformer {
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 		if(isStatic(node)) return false;
 		//TODO 局所配列の場合は詳細な解析をするようにする。
-		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM)return true;//TODO 局所配列
+		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;
 		return false;
@@ -685,7 +682,7 @@ public class GSA implements LocalTransformer {
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
-				dce(node,addr,vars);
+				dce(node,addr,vars,p);
 //				printGlobalProp(node);
 			}
 		}
@@ -720,63 +717,10 @@ public class GSA implements LocalTransformer {
 		int exit=f.flowGraph().exitBlk().id;
 		if(!xDSafe[exit]) {
 			dce[node.id]=true;
+			System.out.println(node);
 			p.unlink();
 		}
 	}
-	
-    public void checkDCE() {
-    	dce = new boolean[idBound];
-        Arrays.fill(dce, false);
-        for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
-        	boolean isSame=false;
-//        	System.out.println("第一");
-        	BasicBlk v=(BasicBlk)p.elem();
-        	if(v!=f.flowGraph().exitBlk()) {
-//    			System.out.println("第二");
-        		for(BiLink bl=v.instrList().last();!bl.atEnd();bl=bl.prev()) {
-        			LirNode node=(LirNode)bl.elem();
-//        			System.out.println("第三");
-        			for(BiLink bll=bl.next();!bll.atEnd();bll=bll.next()) {
-        				LirNode noden=(LirNode)bll.elem();
-//        				System.out.println("第四");
-        				if((node.opCode==Op.SET)&&(noden.opCode==Op.CALL||noden.opCode==Op.SET)) {
-//        					System.out.println("第五");
-        					if(isUse(node,noden)) {
-//        						System.out.println("第六");
-        						isSame=true;
-        					}
-        				}
-        			}
-//                	System.out.println("第七");
-        			for(BiLink pp=p.next();!pp.atEnd();pp=pp.next()) {
-            			BasicBlk vv=(BasicBlk)pp.elem();
-            			if(vv!=f.flowGraph().exitBlk()) {
-            				for(BiLink blll=vv.instrList().first();!blll.atEnd();blll=blll.next()) {
-            					LirNode nodem=(LirNode)blll.elem();
-//            					System.out.println("第八");
-//            					System.out.println(node);
-//            					System.out.println(noden);
-//            					System.out.println("++++++++++++++++");
-            					if((node.opCode==Op.SET)&&(nodem.opCode==Op.CALL||nodem.opCode==Op.SET)) {
-//            						System.out.println("第九");
-            						if(isUse(node,nodem)) {
-//            							System.out.println("第十");
-            							isSame=true;
-            						}
-            					}
-            				}
-            			}
-            			if(!isSame&&(node.opCode==Op.SET)&&v!=f.flowGraph().entryBlk()) {
-                       		dce[v.id]=true;
-                       		System.out.println("------do_dce------");
-                       	}
-                    	isSame=false;
-        			}
-       			}
-       		}
-        }
-    }
-    
          
     public boolean doIt(Function function,ImList args) {
     	
@@ -810,6 +754,7 @@ public class GSA implements LocalTransformer {
 //      localCodeMotion();
 //      globalCodeMotion();
       testGCM();
+      System.out.println("------------------------------");
       displayBasicBlk();
 //      checkDCE();
 //      displayBasicBlk();
