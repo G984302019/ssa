@@ -61,8 +61,15 @@ public class GSA implements LocalTransformer {
 	boolean[] xSameAddr;
 	boolean[] nIsSame;
 	boolean[] xIsSame;
+	boolean[] Transp_e;
+	boolean[] Transp_addr;
+	boolean[] xTransp_addr;
 	public boolean[] nDelayed;
 	public boolean[] xDelayed;
+	public boolean[] nEarliest;
+	public boolean[] xEarliest;
+	public boolean[] nKeepOrder;
+	public boolean[] xKeepOrder;
 	public boolean[] nLatest;
 	public boolean[] xLatest;
 	public boolean[] nUSafe;
@@ -301,13 +308,33 @@ public class GSA implements LocalTransformer {
 	void compLocalProperty(LirNode exp, LirNode addr, ArrayList vars){
 		dce = new boolean[idBound];
 		xSameAddr = new boolean[idBound];
+		nSameAddr = new boolean[idBound];
 		xIsSame = new boolean[idBound];
+		nIsSame = new boolean[idBound];
+		Transp_e = new boolean[idBound];
+		Transp_addr = new boolean[idBound];
+		xTransp_addr = new boolean[idBound];
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
+			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
 			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
+			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
 		}
 	}
 	
+	//TODO 行っていることの確認と変更する必要の確認
+	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
+		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
+			LirNode node = (LirNode)p.elem();
+			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
+			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
+			if(node.kid(1).equals(exp))return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
+		}
+		return false;
+	}
+
 	//変数xIsSameを変更するためのメソッド
 	//変数xIsSameはcompDSafeで用いられている
 	//同じ変数の定義をしている分がその先にあるかの判定。
@@ -323,6 +350,118 @@ public class GSA implements LocalTransformer {
 		}
 		return false;
 	}
+	
+	//TODO EarliestをPDE用に更新
+	public void compEarliest() {
+		nEarliest = new boolean[idBound];
+		xEarliest = new boolean[idBound];
+		Arrays.fill(nEarliest, true);
+		Arrays.fill(xEarliest, true);
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+			BasicBlk blk = (BasicBlk)p.elem();
+			boolean n = nUSafe[blk.id] || nDSafe[blk.id];
+			if(n && blk!=f.flowGraph().entryBlk()){
+				n = false;
+				for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+					BasicBlk pred = (BasicBlk)q.elem();
+					if(!(xUSafe[pred.id] || xDSafe[pred.id])){
+						n = true;
+						break;
+					}
+				}
+			}
+			nEarliest[blk.id] = n;
+			xEarliest[blk.id] = (xUSafe[blk.id] || xDSafe[blk.id]) && (!Transp_e[blk.id] || !(nUSafe[blk.id] || nDSafe[blk.id]) && !n);
+		}
+	}
+	
+	
+	//TODO DelayedをPDE用に更新
+	public void compDelayed() {
+		nDelayed = new boolean[idBound];
+		xDelayed = new boolean[idBound];
+		Arrays.fill(nDelayed, true);
+		Arrays.fill(xDelayed, true);
+		boolean change = true;
+		while(change){
+			change = false;
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				boolean n = false;
+				if(nEarliest[blk.id]){
+					n = true;
+				}else if(blk!=f.flowGraph().entryBlk()){
+					n = true;
+					for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+						BasicBlk pred = (BasicBlk)q.elem();
+						if(!xDelayed[pred.id] || !xKeepOrder[pred.id] || xIsSame[pred.id]){
+							n = false;
+							break;
+						}
+					}
+				}
+				boolean x = xEarliest[blk.id] || (n && !nIsSame[blk.id] && nKeepOrder[blk.id]);
+				if(nDelayed[blk.id]!=n || xDelayed[blk.id]!=x) change = true;
+				nDelayed[blk.id] = n;
+				xDelayed[blk.id] = x;
+			}
+		}
+	}
+	
+	//TODO 行っていることと変える必要の確認
+	public void compKeepOrder(){
+		nKeepOrder = new boolean[idBound];
+		xKeepOrder = new boolean[idBound];
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+			BasicBlk blk = (BasicBlk)p.elem();
+			nKeepOrder[blk.id] = !nUSafe[blk.id] || Transp_addr[blk.id];
+			xKeepOrder[blk.id] = !xUSafe[blk.id] || xTransp_addr[blk.id];
+		}
+	}
+
+	//TODO 行っていることと変える必要の確認
+	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+		boolean xt = true;
+		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+			LirNode node = (LirNode)p.elem();
+			if(isKill(exp,node,vars,blk,p)){
+				xt = false;
+				break;
+			}
+			if(!isLoad(node))continue;
+			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
+		}
+		return xt;
+	}
+	
+	//TODO 行っていることと変える必要の確認
+	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+		if(!Transp_e[blk.id])return false;
+		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+			LirNode node = (LirNode)p.elem();
+			if(isKill(exp,node,vars,blk,p))return false;
+			if(!isLoad(node))continue;
+			if(sameAddr(node,addr)){
+				nSameAddr[blk.id] = true;
+				if(node.kid(1).equals(exp)) break;
+			}else return false;
+		}
+		return true;
+	}
+	
+	//TODO 行っていることと変える必要の確認
+	private boolean compXTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+			LirNode node = (LirNode)p.elem();
+			if(isKill(exp,node,vars,blk,p))return false;
+			if(!isLoad(node))continue;
+			if(sameAddr(node,addr)) break;
+			else return false;
+		}
+		return true;
+	}
+
+
 	
 	//TODO Latestの設定の確認
 	public void compLatest() {
@@ -348,6 +487,36 @@ public class GSA implements LocalTransformer {
 		}
 	}
     
+	//TODO Upsafeが必要なのかの確認とGSA用に更新
+	public void compUSafe() {
+		nUSafe = new boolean[idBound];
+		xUSafe = new boolean[idBound];
+		Arrays.fill(nUSafe, true);
+		Arrays.fill(xUSafe, true);
+		boolean change = true;
+		while(change){
+			change = false;
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				boolean n = false;
+				if(blk!=f.flowGraph().entryBlk()){
+					n = true;
+					for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+						BasicBlk pred = (BasicBlk)q.elem();
+						if(!xUSafe[pred.id]){
+							n = false;
+							break;
+						}
+					}
+				}
+				boolean x = xSameAddr[blk.id] || n && Transp_e[blk.id];
+				if(nUSafe[blk.id]!=n || xUSafe[blk.id]!=x) change = true;
+				nUSafe[blk.id] = n;
+				xUSafe[blk.id] = x;
+			}
+		}
+	}
+	
 	
 	//変数nDSafe,xDSafeを変更するためのメソッド
 	//変数nDSafeはノード上部のDownSafe
