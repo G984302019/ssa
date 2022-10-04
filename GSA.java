@@ -697,10 +697,10 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
 				//addrは変数名
-				LirNode addr = getAddr(node.kid(1));
+				LirNode addr = getAddr(node);
 				//varsは添え字
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(1));
+				collectVars(vars,node);
 				dce(node,addr,vars,p);
 //				printGlobalProp(node);
 			}
