@@ -129,6 +129,7 @@ public class GSA implements LocalTransformer {
 		   BasicBlk v=(BasicBlk)p.elem();
 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
 			   LirNode node=(LirNode)bl.elem();
+			   System.out.println(node);
 		   }
 	   }
 	   System.out.println("-------------------------------------------");
@@ -705,6 +706,7 @@ public class GSA implements LocalTransformer {
 //				printGlobalProp(node);
 			}
 		}
+		
 		
 	}
 	
