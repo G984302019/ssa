@@ -318,6 +318,7 @@ public class GSA implements LocalTransformer {
 		Transp_e = new boolean[idBound];
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
+		Arrays.fill(dce, false);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
@@ -696,7 +697,6 @@ public class GSA implements LocalTransformer {
 	private void testGCM() {
 	//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
-		Arrays.fill(dce, true);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
