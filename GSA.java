@@ -319,14 +319,15 @@ public class GSA implements LocalTransformer {
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(dce, false);
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-			BasicBlk blk = bVecInOrderOfRPost[i];
-			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-			xIsSame[blk.id] = compIsSame(exp,vars,blk);
-			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
-			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
-			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
-		}
+		System.out.println(exp);
+//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+//			BasicBlk blk = bVecInOrderOfRPost[i];
+//			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
+//			xIsSame[blk.id] = compIsSame(exp,vars,blk);
+//			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+//		}
 	}
 	
 	//TODO 行っていることの確認と変更する必要の確認
@@ -347,7 +348,7 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))break;
-			if(!isLoad(node)&&node.nKids()>0) {
+			if(!isLoad(node)) {
 				if(node.kid(1).equals(exp))return true;
 			}else if(isStore(node)){
 				if(node.kid(0).equals(exp))return true;
