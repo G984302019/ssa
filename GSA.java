@@ -677,7 +677,26 @@ public class GSA implements LocalTransformer {
 	private void globalCodeMotion(){
 		//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
-		Arrays.fill(dce, false);
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+				LirNode node = (LirNode)p.elem();
+				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+				insertNode.add(node.kid(1).makeCopy(env.lir));
+				//addrは変数名
+				LirNode addr = getAddr(node.kid(1));
+				//varsは添え字
+				ArrayList vars = new ArrayList();
+				collectVars(vars,node.kid(1));
+//				printGlobalProp(node);
+			}
+		}
+	}
+	
+	private void testGCM() {
+	//varsは添え字の中の変数
+		ArrayList insertNode = new ArrayList();
+		Arrays.fill(dce, true);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
@@ -692,27 +711,7 @@ public class GSA implements LocalTransformer {
 				dce(node,addr,vars);
 //				printGlobalProp(node);
 			}
-		}
-	}
-	
-	private void testGCM() {
-		//varsは添え字の中の変数
-		ArrayList insertNode = new ArrayList();
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-			BasicBlk blk = bVecInOrderOfRPost[i];
-			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
-				LirNode node = (LirNode)p.elem();
-				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
-				//addrは変数名
-				LirNode addr = getAddr(node);//node.kid(1)
-				//varsは添え字
-				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(1));//node.kid(1)
-				dce(node,addr,vars);
-//				printGlobalProp(node);
-			}
-		}
-		
+		}		
 		
 	}
 	
@@ -761,6 +760,7 @@ public class GSA implements LocalTransformer {
       
 //      localCodeMotion();
 //      globalCodeMotion();
+      displayBasicBlk();
       testGCM();
       displayBasicBlk();
       System.out.println("------------------------------");
