@@ -702,6 +702,7 @@ public class GSA implements LocalTransformer {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
+				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
 				//addrは変数名
 				LirNode addr = getAddr(node);//node.kid(1)
 				//varsは添え字
