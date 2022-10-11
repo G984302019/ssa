@@ -760,7 +760,6 @@ public class GSA implements LocalTransformer {
       
 //      localCodeMotion();
 //      globalCodeMotion();
-      displayBasicBlk();
       testGCM();
       displayBasicBlk();
       System.out.println("------------------------------");
