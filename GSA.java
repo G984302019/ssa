@@ -706,7 +706,7 @@ public class GSA implements LocalTransformer {
 				LirNode addr = getAddr(node);//node.kid(1)
 				//varsは添え字
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node);//node.kid(1)
+				collectVars(vars,node.kid(1));//node.kid(1)
 				dce(node,addr,vars);
 //				printGlobalProp(node);
 			}
