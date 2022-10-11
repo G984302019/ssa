@@ -762,7 +762,7 @@ public class GSA implements LocalTransformer {
 //      localCodeMotion();
 //      globalCodeMotion();
       testGCM();
-      displayBasicBlk();
+//      displayBasicBlk();
       System.out.println("------------------------------");
 //      checkDCE();
 //      displayBasicBlk();
