@@ -320,14 +320,14 @@ public class GSA implements LocalTransformer {
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(dce, false);
 		System.out.println(exp);
-//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-//			BasicBlk blk = bVecInOrderOfRPost[i];
-//			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-//			xIsSame[blk.id] = compIsSame(exp,vars,blk);
-//			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
-//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
-//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
-//		}
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
+			xIsSame[blk.id] = compIsSame(exp,vars,blk);
+			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+		}
 	}
 	
 	//TODO 行っていることの確認と変更する必要の確認
@@ -523,7 +523,6 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
-	
 	//変数nDSafe,xDSafeを変更するためのメソッド
 	//変数nDSafeはノード上部のDownSafe
 	//変数xDSafeは
@@ -713,14 +712,13 @@ public class GSA implements LocalTransformer {
 //				printGlobalProp(node);
 			}
 		}		
-		
 	}
 	
 	//TODO dceメソッドを完成させる
 	public void dce(LirNode node, LirNode addr, ArrayList vars) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		compLocalProperty(node,addr,vars);
+		compLocalProperty(node.kid(1),addr,vars);
 		compDSafe();
 		for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
 			BasicBlk blk = (BasicBlk)p.elem();
