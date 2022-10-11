@@ -348,7 +348,7 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))break;
-			if(!isLoad(node)&&node.nKids()>0) {
+			if(!isLoad(node)&&node.nKids()>1) {
 				if(node.kid(1).equals(exp))return true;
 			}else if(isStore(node)){
 				if(node.kid(0).equals(exp))return true;
