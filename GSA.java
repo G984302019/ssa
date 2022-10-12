@@ -718,7 +718,7 @@ public class GSA implements LocalTransformer {
 	public void dce(LirNode node, LirNode addr, ArrayList vars) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		compLocalProperty(node.kid(1),addr,vars);
+		compLocalProperty(node.kid(0),addr,vars);
 		compDSafe();
 		for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
 			BasicBlk blk = (BasicBlk)p.elem();
