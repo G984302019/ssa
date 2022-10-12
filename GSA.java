@@ -267,6 +267,7 @@ public class GSA implements LocalTransformer {
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 		if(isStatic(node)) return false;
 		//TODO 局所配列の場合は詳細な解析をするようにする。
+		if(node.opCode==Op.CALL)return true;
 		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;
