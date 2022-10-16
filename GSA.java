@@ -122,6 +122,25 @@ public class GSA implements LocalTransformer {
     	return newNode;
     }
     
+    void dcedisplay() {
+ 	   System.out.println("-------------------------------------------");
+ 	   for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+ 		   BasicBlk v=(BasicBlk)p.elem();
+ 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
+ 			   LirNode node=(LirNode)bl.elem();
+ 			   if(dce[node.id]) {
+ 				   p.unlink();
+ 				   break;
+ 			   }else {
+ 				   System.out.println(node);
+ 		   
+ 			   }
+ 		   }
+ 	   }
+ 	   System.out.println("-------------------------------------------");
+ 	   System.out.println("-------------------------------------------");
+     }
+    
     
    void displayBasicBlk() {
 	   System.out.println("-------------------------------------------");
@@ -129,13 +148,7 @@ public class GSA implements LocalTransformer {
 		   BasicBlk v=(BasicBlk)p.elem();
 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
 			   LirNode node=(LirNode)bl.elem();
-			   if(dce[node.id]) {
-				   p.unlink();
-				   break;
-			   }else {
-				   System.out.println(node);
-		   
-			   }
+			   System.out.println(node);
 		   }
 	   }
 	   System.out.println("-------------------------------------------");
