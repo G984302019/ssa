@@ -248,6 +248,7 @@ public class GSA implements LocalTransformer {
     //TODO collectVarsメソッドの内容を確認する。
     public void collectVars(ArrayList vars, LirNode exp){
 		for(int i=0;i<exp.nKids();i++){
+			if(isStatic(exp))continue;
 			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
 			else if(exp.kid(i).nKids()>0) collectVars(vars,exp.kid(i));
 		}
@@ -270,7 +271,7 @@ public class GSA implements LocalTransformer {
 		if(node.opCode==Op.CALL)return true;
 		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
-		if(vars.contains(node.kid(0)))return true;
+		if(vars.contains(node.kid(0)))return true;//TODO conectvarsメソッドと共に何を確認しているかのチェック
 		return false;
 	}
     
@@ -683,6 +684,7 @@ public class GSA implements LocalTransformer {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
+				//TODO ストア命令用に変更する。
 				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
 				insertNode.add(node.kid(1).makeCopy(env.lir));
 				//addrは変数名
@@ -702,15 +704,19 @@ public class GSA implements LocalTransformer {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
-				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
-				insertNode.add(node.kid(1).makeCopy(env.lir));
-				//addrは変数名
+				//TODO この下の挙動は何なのかを探る。
+//				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+				if(!isStore(node)|| !checkType(node))continue;
+//				insertNode.add(node.kid(1).makeCopy(env.lir));
+				//addrは変数名　//TODO 本当に変数名か？
 				LirNode addr = getAddr(node.kid(1));
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
 				dce(node,addr,vars);
 //				printGlobalProp(node);
+//				LirNode newNode = insertNewNode(node,addr,vars);
+//				if(newNode!=null) replace(newNode);
 			}
 		}		
 	}
@@ -760,8 +766,8 @@ public class GSA implements LocalTransformer {
       
 //      localCodeMotion();
 //      globalCodeMotion();
-      testGCM();
-//      displayBasicBlk();
+//      testGCM();
+      displayBasicBlk();
       System.out.println("------------------------------");
 //      checkDCE();
 //      displayBasicBlk();
