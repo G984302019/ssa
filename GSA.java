@@ -261,7 +261,6 @@ public class GSA implements LocalTransformer {
     //TODO collectVarsメソッドの内容を確認する。
     public void collectVars(ArrayList vars, LirNode exp){
 		for(int i=0;i<exp.nKids();i++){
-			if(isStatic(exp))continue;
 			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
 			else if(exp.kid(i).nKids()>0) collectVars(vars,exp.kid(i));
 		}
@@ -279,7 +278,6 @@ public class GSA implements LocalTransformer {
     
     //そのノードが削除できる可能性があるものなのかを判断するメソッド
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
-		if(isStatic(node)) return false;
 		//TODO 局所配列の場合は詳細な解析をするようにする。
 		if(node.opCode==Op.CALL)return true;
 		if(isStore(node))return true;//TODO 局所配列
@@ -288,27 +286,27 @@ public class GSA implements LocalTransformer {
 		return false;
 	}
     
-    public boolean isStatic(LirNode node) {
-    	//命令がStaticな命令なのかを判定。
-    	if(isLoad(node)) {
-    		if(node.kid(1).opCode==Op.STATIC)return true;
-    	}
-    	if(isStore(node)) {
-    		if(node.kid(0).nKids()>0) {
-    			if(node.kid(0).kid(0).opCode==Op.STATIC)return true;
-    			if(node.kid(0).kid(0).opCode==Op.ADD&&node.kid(0).kid(0).nKids()>0) {
-    				if(node.kid(0).kid(0).kid(0).opCode==Op.STATIC)return true;
-    			}
-    		}
-    		if(node.kid(1).nKids()>0) {
-    			if(node.kid(1).kid(0).opCode==Op.STATIC)return true;
-    			if(node.kid(1).kid(0).opCode==Op.ADD&&node.kid(1).kid(0).nKids()>0) {
-    				if(node.kid(1).kid(0).kid(0).opCode==Op.STATIC)return true;
-    			}
-    		}
-    	}
-    	return false;
-    }
+//    public boolean isStatic(LirNode node) {
+//    	//命令がStaticな命令なのかを判定。
+//    	if(isLoad(node)) {
+//    		if(node.kid(1).opCode==Op.STATIC)return true;
+//    	}
+//    	if(isStore(node)) {
+//    		if(node.kid(0).nKids()>0) {
+//    			if(node.kid(0).kid(0).opCode==Op.STATIC)return true;
+//    			if(node.kid(0).kid(0).opCode==Op.ADD&&node.kid(0).kid(0).nKids()>0) {
+//    				if(node.kid(0).kid(0).kid(0).opCode==Op.STATIC)return true;
+//    			}
+//    		}
+//    		if(node.kid(1).nKids()>0) {
+//    			if(node.kid(1).kid(0).opCode==Op.STATIC)return true;
+//    			if(node.kid(1).kid(0).opCode==Op.ADD&&node.kid(1).kid(0).nKids()>0) {
+//    				if(node.kid(1).kid(0).kid(0).opCode==Op.STATIC)return true;
+//    			}
+//    		}
+//    	}
+//    	return false;
+//    }
     //pointerはstaticなものだからそこで判定する。
     
     //LirNodeがnKidsを持たなくなるまで分割する。何のためだ。。。？
@@ -338,7 +336,7 @@ public class GSA implements LocalTransformer {
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-			xIsSame[blk.id] = compIsSame(exp,vars,blk);
+			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
 			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
@@ -359,11 +357,11 @@ public class GSA implements LocalTransformer {
 	//変数xIsSameを変更するためのメソッド
 	//変数xIsSameはcompDSafeで用いられている
 	//同じ変数の定義をしている分がその先にあるかの判定。
-	private boolean compIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
+	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))break;
-			if(!isLoad(node)&&node.nKids()>1) {
+			if(!isLoad(node)) {
 				if(node.kid(1).equals(exp))return true;
 			}else if(isStore(node)){
 				if(node.kid(0).equals(exp))return true;
