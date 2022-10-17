@@ -367,7 +367,7 @@ public class GSA implements LocalTransformer {
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
 			System.out.println(":equals");
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
-			if(node.kid(1).equals(exp.kid(1))) {
+			if(node.kid(0).equals(exp)) {
 				System.out.println(true);
 				return true;
 			}
@@ -750,7 +750,7 @@ public class GSA implements LocalTransformer {
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));//〇collectvars
-				compLocalProperty(node,addr,vars);
+				compLocalProperty(node.kid(0),addr,vars);
 //				dce(node,addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
