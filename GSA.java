@@ -705,7 +705,7 @@ public class GSA implements LocalTransformer {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
-				if(!isStore(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
 				insertNode.add(node.kid(1).makeCopy(env.lir));
 				//addrは変数名
 				LirNode addr = getAddr(node.kid(1));
@@ -728,7 +728,7 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
-				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+				if(!isStore(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
 				insertNode.add(node.kid(1).makeCopy(env.lir));
 				//addrは変数名やレジスタ名、実際に値が保存してある場所みたいなイメージ
 //				LirNode addr = getAddr(node.kid(1));
