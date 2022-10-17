@@ -261,11 +261,11 @@ public class GSA implements LocalTransformer {
     //TODO collectVarsメソッドの内容を確認する。
     public void collectVars(ArrayList vars, LirNode exp){
 		for(int i=0;i<exp.nKids();i++){
-//			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
-			if(exp.kid(i).opCode==Op.REG) {//
-				System.out.println(":::vars.add"+exp.kid(i));//
-				vars.add(exp.kid(i).makeCopy(env.lir));//
-			}//
+			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
+//			if(exp.kid(i).opCode==Op.REG) {//
+//				System.out.println(":::vars.add"+exp.kid(i));//
+//				vars.add(exp.kid(i).makeCopy(env.lir));//
+//			}//
 			else if(exp.kid(i).nKids()>0) collectVars(vars,exp.kid(i));
 		}
 	}
@@ -360,6 +360,7 @@ public class GSA implements LocalTransformer {
 		System.out.println("::NisSame");
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
+			System.out.println(node);
 			System.out.println(":isKill");
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
 			System.out.println(":isload");
@@ -741,10 +742,10 @@ public class GSA implements LocalTransformer {
 				insertNode.add(node.kid(0).makeCopy(env.lir));
 				//addrは変数名,a[1]=0だったらaが出る感じ
 //				LirNode addr = getAddr(node.kid(1));
-				LirNode addr = getAddr(node.kid(0));
+				LirNode addr = getAddr(node.kid(0));//〇getadd
 				//varsは添え字
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(0));
+				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node,addr,vars);
 //				dce(node,addr,vars);
 //				printGlobalProp(node);
