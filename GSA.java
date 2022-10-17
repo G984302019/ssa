@@ -268,8 +268,9 @@ public class GSA implements LocalTransformer {
     
     //load命令かどうかを判断する
     public boolean isLoad(LirNode node){
-		return (node.opCode==Op.SET && node.kid(0).opCode==Op.REG && node.kid(1).opCode==Op.MEM);
-	}
+//		return (node.opCode==Op.SET && node.kid(0).opCode==Op.REG && node.kid(1).opCode==Op.MEM);
+    	return (node.opCode==Op.SET && node.kid(0).opCode==Op.REG);
+    }
     
     //store命令かどうかを判断する
     public boolean isStore(LirNode node) {
@@ -277,12 +278,15 @@ public class GSA implements LocalTransformer {
     }
     
     //そのノードが削除できる可能性があるものなのかを判断するメソッド
+    //a[i]=0の時のi,x=yの時のyなど変数の値を変更する可能性があるノード
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 		//TODO 局所配列の場合は詳細な解析をするようにする。
-		if(node.opCode==Op.CALL)return true;
+    	System.out.println("isKill"+node);
+		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
 		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;//TODO conectvarsメソッドと共に何を確認しているかのチェック
+		System.out.println(false);
 		return false;
 	}
     
@@ -336,20 +340,24 @@ public class GSA implements LocalTransformer {
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
-			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
-			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
-			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+//			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
+//			//変数のkillが内科のチェック
+//			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+//			//配列のアクセス順序が崩れていないかのチェック。
+//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+//			//
+//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
 		}
 	}
 	
 	//TODO 行っていることの確認と変更する必要の確認
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
+		System.out.println("NisSame:"+exp);
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
-			if(node.kid(1).equals(exp))return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
+			if(node.kid(1).equals(exp))System.out.println(true+":"+node); return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 		}
 		return false;
 	}
@@ -361,6 +369,8 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))break;
+			//式の右辺を確認しようとしている。
+			//TODO ロード命令省かなくてもいい。
 			if(!isLoad(node)) {
 				if(node.kid(1).equals(exp))return true;
 			}else if(isStore(node)){
@@ -447,7 +457,7 @@ public class GSA implements LocalTransformer {
 				xt = false;
 				break;
 			}
-			if(!isLoad(node))continue;
+			if(!isLoad(node)&&!isStore(node))continue;
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 		}
 		return xt;
@@ -459,7 +469,7 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))return false;
-			if(!isLoad(node))continue;
+			if(!isLoad(node)&&!isStore(node))continue;
 			if(sameAddr(node,addr)){
 				nSameAddr[blk.id] = true;
 				if(node.kid(1).equals(exp)) break;
@@ -704,6 +714,9 @@ public class GSA implements LocalTransformer {
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
 //				printGlobalProp(node);
+				//dceの際はいらないが、コードを移動する際、消してから新しいノードを追加するために必要。
+//				LirNode newNode = insertNewNode(node,addr,vars);
+//				if(newNode!=null) replace(newNode);
 			}
 		}
 	}
@@ -716,15 +729,15 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
-//				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
-				if(!isStore(node)|| !checkType(node))continue;
-//				insertNode.add(node.kid(1).makeCopy(env.lir));
-				//addrは変数名　//TODO 本当に変数名か？
+				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+				insertNode.add(node.kid(1).makeCopy(env.lir));
+				//addrは変数名やレジスタ名、実際に値が保存してある場所みたいなイメージ
 				LirNode addr = getAddr(node.kid(1));
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
-				dce(node,addr,vars);
+				compLocalProperty(node,addr,vars);
+//				dce(node,addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -775,10 +788,12 @@ public class GSA implements LocalTransformer {
 //    	  }
 //      }
       
-//      localCodeMotion();
+      localCodeMotion();
 //      globalCodeMotion();
-//      testGCM();
       displayBasicBlk();
+      testGCM();
+      	
+//      displayBasicBlk();
       System.out.println("------------------------------");
 //      checkDCE();
 //      displayBasicBlk();
