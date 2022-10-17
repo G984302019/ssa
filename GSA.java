@@ -287,7 +287,7 @@ public class GSA implements LocalTransformer {
 		//TODO 局所配列の場合は詳細な解析をするようにする。
 //    	System.out.println("isKill"+node);
 		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
-//		if(isStore(node))return true;//TODO 局所配列
+		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;//TODO conectvarsメソッドと共に何を確認しているかのチェック
 //		System.out.println(false);
@@ -361,15 +361,15 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 			System.out.println(node);
-//			System.out.println(":isKill");
+			System.out.println(":isKill");
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
-//			System.out.println(":isstore");//
+			System.out.println(":isstore");//
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
-//			System.out.println(":equals");
+			System.out.println(":equals");
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 			if(node.kid(1).equals(exp)) return true;
 		}
-//		System.out.println(false);
+		System.out.println(false);
 		return false;
 	}
 
