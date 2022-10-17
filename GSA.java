@@ -788,7 +788,7 @@ public class GSA implements LocalTransformer {
 //    	  }
 //      }
       
-      localCodeMotion();
+//      localCodeMotion();
 //      globalCodeMotion();
       displayBasicBlk();
       testGCM();
