@@ -315,6 +315,7 @@ public class GSA implements LocalTransformer {
     
     //LirNodeがnKidsを持たなくなるまで分割する。何のためだ。。。？
     LirNode getAddr(LirNode exp){
+    	if(exp.nKids()==0) return exp;
 		if(exp.kid(0).nKids()==0) return exp.kid(0);
 		else return getAddr(exp.kid(0));
 	}
@@ -737,7 +738,7 @@ public class GSA implements LocalTransformer {
 				insertNode.add(node.kid(1).makeCopy(env.lir));
 				//addrは変数名やレジスタ名、実際に値が保存してある場所みたいなイメージ
 //				LirNode addr = getAddr(node.kid(1));
-				LirNode addr = getAddr(node);
+				LirNode addr = getAddr(node.kid(1));
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
