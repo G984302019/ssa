@@ -732,7 +732,8 @@ public class GSA implements LocalTransformer {
 				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
 				insertNode.add(node.kid(1).makeCopy(env.lir));
 				//addrは変数名やレジスタ名、実際に値が保存してある場所みたいなイメージ
-				LirNode addr = getAddr(node.kid(1));
+//				LirNode addr = getAddr(node.kid(1));
+				LirNode addr = getAddr(node);
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(1));
