@@ -261,7 +261,11 @@ public class GSA implements LocalTransformer {
     //TODO collectVarsメソッドの内容を確認する。
     public void collectVars(ArrayList vars, LirNode exp){
 		for(int i=0;i<exp.nKids();i++){
-			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
+//			if(exp.kid(i).opCode==Op.REG) vars.add(exp.kid(i).makeCopy(env.lir));
+			if(exp.kid(i).opCode==Op.REG) {//
+				System.out.println(":::vars.add"+exp.kid(i));//
+				vars.add(exp.kid(i).makeCopy(env.lir));//
+			}//
 			else if(exp.kid(i).nKids()>0) collectVars(vars,exp.kid(i));
 		}
 	}
@@ -338,7 +342,6 @@ public class GSA implements LocalTransformer {
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(dce, false);
 		System.out.println("exp:"+exp);
-		System.out.println("addr:"+addr);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
@@ -704,27 +707,27 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO globalCodeMotionメソッドの見直し
-	private void globalCodeMotion(){
-		//varsは添え字の中の変数
-		ArrayList insertNode = new ArrayList();
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-			BasicBlk blk = bVecInOrderOfRPost[i];
-			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
-				LirNode node = (LirNode)p.elem();
-				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
-				insertNode.add(node.kid(1).makeCopy(env.lir));
-				//addrは変数名
-				LirNode addr = getAddr(node.kid(1));
-				//varsは添え字
-				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(1));
+//	private void globalCodeMotion(){
+//		//varsは添え字の中の変数
+//		ArrayList insertNode = new ArrayList();
+//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+//			BasicBlk blk = bVecInOrderOfRPost[i];
+//			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+//				LirNode node = (LirNode)p.elem();
+//				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
+//				insertNode.add(node.kid(1).makeCopy(env.lir));
+//				//addrは変数名
+//				LirNode addr = getAddr(node.kid(1));
+//				//varsは添え字
+//				ArrayList vars = new ArrayList();
+//				collectVars(vars,node.kid(1));
 //				printGlobalProp(node);
-				//dceの際はいらないが、コードを移動する際、消してから新しいノードを追加するために必要。
+//				//dceの際はいらないが、コードを移動する際、消してから新しいノードを追加するために必要。
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
-			}
-		}
-	}
+//			}
+//		}
+//	}
 	
 	private void testGCM() {
 	//varsは添え字の中の変数
@@ -736,7 +739,7 @@ public class GSA implements LocalTransformer {
 				//TODO この下の挙動は何なのかを探る。
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
 				insertNode.add(node.kid(0).makeCopy(env.lir));
-				//addrは変数名やレジスタ名、実際に値が保存してある場所みたいなイメージ
+				//addrは変数名,a[1]=0だったらaが出る感じ
 //				LirNode addr = getAddr(node.kid(1));
 				LirNode addr = getAddr(node.kid(0));
 				//varsは添え字
