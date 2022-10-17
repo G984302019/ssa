@@ -711,13 +711,13 @@ public class GSA implements LocalTransformer {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 				LirNode node = (LirNode)p.elem();
-				if(!isLoad(node) || insertNode.contains(node.kid(1)) || !checkType(node))continue;
-				insertNode.add(node.kid(1).makeCopy(env.lir));
+				if(!isLoad(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
+				insertNode.add(node.kid(0).makeCopy(env.lir));
 				//addrは変数名
-				LirNode addr = getAddr(node.kid(1));
+				LirNode addr = getAddr(node.kid(0));
 				//varsは添え字
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(1));
+				collectVars(vars,node.kid(0));
 //				printGlobalProp(node);
 				//dceの際はいらないが、コードを移動する際、消してから新しいノードを追加するために必要。
 //				LirNode newNode = insertNewNode(node,addr,vars);
