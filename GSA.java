@@ -366,7 +366,7 @@ public class GSA implements LocalTransformer {
 			System.out.println(":isload");
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
 			System.out.println(":equals");
-			if(node.kid(1).equals(exp))System.out.println(true+":"+node); return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
+			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 		}
 		System.out.println(false);
 		return false;
