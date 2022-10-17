@@ -361,18 +361,15 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 			System.out.println(node);
-			System.out.println(":isKill");
+//			System.out.println(":isKill");
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
-			System.out.println(":isstore");//
-			if(!isStore(node))continue;//isLoadがfalseだったら次のループ
-			System.out.println(":equals");
+//			System.out.println(":isstore");//
+			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
+//			System.out.println(":equals");
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
-			if(node.kid(0).equals(exp)) {
-				System.out.println(true);
-				return true;
-			}
+			if(node.kid(1).equals(exp)) return true;
 		}
-		System.out.println(false);
+//		System.out.println(false);
 		return false;
 	}
 
