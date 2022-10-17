@@ -281,12 +281,12 @@ public class GSA implements LocalTransformer {
     //a[i]=0の時のi,x=yの時のyなど変数の値を変更する可能性があるノード
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 		//TODO 局所配列の場合は詳細な解析をするようにする。
-    	System.out.println("isKill"+node);
+//    	System.out.println("isKill"+node);
 		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
 		if(isStore(node))return true;//TODO 局所配列
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;//TODO conectvarsメソッドと共に何を確認しているかのチェック
-		System.out.println(false);
+//		System.out.println(false);
 		return false;
 	}
     
