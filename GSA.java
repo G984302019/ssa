@@ -343,12 +343,12 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(dce, false);
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
-		System.out.println("exp:");
-		System.out.println(exp);
+//		System.out.println("exp:");
+//		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-//			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-//			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
+			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
+			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
 			//変数のkillが内科のチェック
 			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
