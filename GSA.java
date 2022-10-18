@@ -389,7 +389,7 @@ public class GSA implements LocalTransformer {
 			//式の右辺を確認しようとしている。
 			//ロード命令省かなくてもいい。
 			System.out.println(":isLoad");//
-			if(node.nKids()<1) continue;//
+			if(!isLoad(node)) continue;//
 //			if(!isLoad(node)) {
 //				if(node.kid(1).equals(exp))return true;
 //			}else if(isStore(node)){
