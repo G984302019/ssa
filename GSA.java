@@ -350,9 +350,9 @@ public class GSA implements LocalTransformer {
 			//変数のkillが内科のチェック
 			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
-//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			//
-//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
 		}
 	}
 	
