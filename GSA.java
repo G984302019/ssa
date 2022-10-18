@@ -317,14 +317,14 @@ public class GSA implements LocalTransformer {
 //    }
     //pointerはstaticなものだからそこで判定する。
     
-    //LirNodeがnKidsを持たなくなるまで分割する。何のためだ。。。？
+    //同様の配列参照を行っている場合true;
     LirNode getAddr(LirNode exp){
     	if(exp.nKids()==0) return exp;
 		if(exp.kid(0).nKids()==0) return exp.kid(0);
 		else return getAddr(exp.kid(0));
 	}
     
-    //conmTranspeで用いられているメソッド
+    //同様の配列参照をするload命令があった場合にtrue;
   	public boolean sameAddr(LirNode node, LirNode addr){
   		if(!isLoad(node))return false;
   		return (addr.equals(getAddr(node.kid(1))));
@@ -476,30 +476,30 @@ public class GSA implements LocalTransformer {
 		}
 	}
 
-	//同様のインスタンスを持つ配列へのストア命令及びロード命令があった場合にfalse,
-	//またsameaddrの更新
+	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
+	//またxsameaddrの更新
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
-		System.out.println("::compTranspe");//
+//		System.out.println("::compTranspe");//
 		boolean xt = true;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
-			System.out.println(node);//
-			System.out.println(":iskill");//
+//			System.out.println(node);//
+//			System.out.println(":iskill");//
 			if(isKill(exp,node,vars,blk,p)){
-				System.out.println("----false----");
+//				System.out.println("----false----");
 				xt = false;
 				break;
 			}
-			System.out.println(":isload_isstore");//
+//			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
-			System.out.println(":sameaddr");//
+//			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 		}
-		System.out.println("++++"+xt+"++++");
+//		System.out.println("++++"+xt+"++++");
 		return xt;
 	}
 	
-	//TODO 行っていることと変える必要の確認
+	//同様のストア命令に対する変更も、異なる配列への参照もない場合true
 	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 		if(!Transp_e[blk.id])return false;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
@@ -514,7 +514,8 @@ public class GSA implements LocalTransformer {
 		return true;
 	}
 	
-	//TODO 行っていることと変える必要の確認
+	//同様のストア命令に対する変更も、異なる配列への参照もない場合true;
+	//ノードは上げないからいらないかも
 	private boolean compXTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
