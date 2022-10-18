@@ -341,7 +341,8 @@ public class GSA implements LocalTransformer {
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(dce, false);
-		System.out.println("exp:"+exp);
+		System.out.println("exp:");
+		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
