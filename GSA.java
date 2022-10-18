@@ -396,10 +396,11 @@ public class GSA implements LocalTransformer {
 //				if(node.kid(0).equals(exp))return true;
 //			}
 			if(node.kid(1).equals(exp)) {
-				System.out.println();
+				System.out.println("--TrueTrueTrueTrue--");
 				return true;
 			}
 		}
+		System.out.println("--FalseFalseFalseFalse--");
 		return false;
 	}
 	
