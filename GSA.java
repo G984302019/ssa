@@ -476,16 +476,23 @@ public class GSA implements LocalTransformer {
 
 	//
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+		System.out.println("::compTranspe");//
 		boolean xt = true;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
+			System.out.println(node);//
+			System.out.println(":iskill");//
 			if(isKill(exp,node,vars,blk,p)){
+				System.out.println("----false----");
 				xt = false;
 				break;
 			}
+			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
+			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 		}
+		System.out.println(xt);
 		return xt;
 	}
 	
