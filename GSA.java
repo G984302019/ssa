@@ -398,7 +398,7 @@ public class GSA implements LocalTransformer {
 //			}
 			System.out.println(":equals");
 			if(node.kid(1).equals(exp)) {
-				System.out.println("--TrueTrueTrueTrue--");
+				System.out.println("+++TrueTrueTrueTrue+++");
 				return true;
 			}
 		}
