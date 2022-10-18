@@ -344,7 +344,7 @@ public class GSA implements LocalTransformer {
 		System.out.println("exp:"+exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-//			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
+			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
 			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
 //			//変数のkillが内科のチェック
 //			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
@@ -389,7 +389,7 @@ public class GSA implements LocalTransformer {
 			//式の右辺を確認しようとしている。
 			//ロード命令省かなくてもいい。
 			System.out.println(":isLoad");//
-			if(!isLoad(node)) continue;//
+			if(node.nKids()<1) continue;//
 //			if(!isLoad(node)) {
 //				if(node.kid(1).equals(exp))return true;
 //			}else if(isStore(node)){
