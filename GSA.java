@@ -341,6 +341,8 @@ public class GSA implements LocalTransformer {
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(dce, false);
+		Arrays.fill(xSameAddr, false);
+		Arrays.fill(nSameAddr, false);
 		System.out.println("exp:");
 		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
@@ -474,7 +476,8 @@ public class GSA implements LocalTransformer {
 		}
 	}
 
-	//
+	//同様のインスタンスを持つ配列へのストア命令及びロード命令があった場合にfalse,
+	//またsameaddrの更新
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 		System.out.println("::compTranspe");//
 		boolean xt = true;
@@ -492,7 +495,7 @@ public class GSA implements LocalTransformer {
 			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 		}
-		System.out.println(xt);
+		System.out.println("++++"+xt+"++++");
 		return xt;
 	}
 	
