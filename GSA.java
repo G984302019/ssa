@@ -614,6 +614,8 @@ public class GSA implements LocalTransformer {
 				boolean n = nIsSame[blk.id] || x;
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 				if(change) {
+					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^");
+					if(xDSafe[blk.id]!=x) System.out.println("^^^xxx^^^");
 					System.out.println(blk.id);
 				}
 				nDSafe[blk.id] = n;
