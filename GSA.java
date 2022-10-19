@@ -780,6 +780,7 @@ public class GSA implements LocalTransformer {
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node.kid(0),addr,vars);
+				compDSafe();
 //				dce(node,addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
