@@ -343,8 +343,8 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(dce, false);
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
-//		System.out.println("exp:");
-//		System.out.println(exp);
+		System.out.println("exp:");
+		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
@@ -360,7 +360,7 @@ public class GSA implements LocalTransformer {
 	
 	//TODO 行っていることの確認と変更する必要の確認
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-//		System.out.println("::NisSame");//
+		System.out.println("::NisSame");//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);
@@ -369,11 +369,12 @@ public class GSA implements LocalTransformer {
 //			System.out.println(":isLoad");//
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
 //			System.out.println(":equals");
-			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
-//			if(node.kid(1).equals(exp)) { 
-//				System.out.println("--TrueTrueTrueTrue--");
-//				return true;
-//			}
+//			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
+			if(node.kid(1).equals(exp)) { 
+				System.out.println(blk.id);
+				System.out.println(node);
+				return true;
+			}
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
 		return false;
@@ -383,7 +384,7 @@ public class GSA implements LocalTransformer {
 	//変数xIsSameはcompDSafeで用いられている
 	//同じ変数の定義をしている分がその先にあるかの判定。
 	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-//		System.out.println("::XisSame");//
+		System.out.println("::XisSame");//
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
@@ -400,7 +401,8 @@ public class GSA implements LocalTransformer {
 //			}
 //			System.out.println(":equals");
 			if(node.kid(1).equals(exp)) {
-//				System.out.println("+++TrueTrueTrueTrue+++");
+				System.out.println(blk.id);
+				System.out.println(node);
 				return true;
 			}
 		}
@@ -587,6 +589,7 @@ public class GSA implements LocalTransformer {
 	//変数nDSafeはノード上部のDownSafe
 	//変数xDSafeは
 	public void compDSafe() {
+		System.out.println("compDSafe");
 		nDSafe = new boolean[idBound];
 		xDSafe = new boolean[idBound];
 		Arrays.fill(nDSafe, true);
@@ -610,6 +613,9 @@ public class GSA implements LocalTransformer {
 				}
 				boolean n = nIsSame[blk.id] || x;
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
+				if(change) {
+					System.out.println(blk.id);
+				}
 				nDSafe[blk.id] = n;
 				xDSafe[blk.id] = x;
 			}
