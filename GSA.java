@@ -144,8 +144,9 @@ public class GSA implements LocalTransformer {
     
    void displayBasicBlk() {
 	   System.out.println("-------------------------------------------");
-	   for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+	   for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 		   BasicBlk v=(BasicBlk)p.elem();
+		   System.out.println(v.id);
 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
 			   LirNode node=(LirNode)bl.elem();
 			   System.out.println(node);
