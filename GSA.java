@@ -626,6 +626,11 @@ public class GSA implements LocalTransformer {
 				nDSafe[blk.id] = n;
 				xDSafe[blk.id] = x;
 			}
+			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
+				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
+			}
 		}
 	}
 	
