@@ -351,11 +351,11 @@ public class GSA implements LocalTransformer {
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);//〇
 			xIsSame[blk.id] = compXIsSame(exp,vars,blk);//〇
 			//変数のkillが内科のチェック
-//			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
-//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			//
-//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
 		}
 	}
 	
@@ -788,7 +788,7 @@ public class GSA implements LocalTransformer {
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node.kid(0),addr,vars);
-//				compDSafe();
+				compDSafe();
 //				dce(node,addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
