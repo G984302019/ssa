@@ -774,8 +774,8 @@ public class GSA implements LocalTransformer {
 		ArrayList insertNode = new ArrayList();
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-//			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
-			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
+			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+//			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
