@@ -372,7 +372,7 @@ public class GSA implements LocalTransformer {
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 			if(node.kid(1).equals(exp)) { 
 				System.out.println("++TrueTrueTrueTrue++");
-				System.out.println(blk.id+""+node);
+				System.out.println(blk.id);
 				return true;
 			}
 		}
@@ -401,8 +401,8 @@ public class GSA implements LocalTransformer {
 //			}
 //			System.out.println(":equals");
 			if(node.kid(1).equals(exp)) {
+				System.out.println("++TrueTrueTrueTrue++");
 				System.out.println(blk.id);
-				System.out.println(node);
 				return true;
 			}
 		}
