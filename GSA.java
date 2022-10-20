@@ -407,7 +407,7 @@ public class GSA implements LocalTransformer {
 				return true;
 			}
 		}
-		System.out.println("--FalseFalseFalseFalse--");
+//		System.out.println("--FalseFalseFalseFalse--");
 		return false;
 	}
 	
