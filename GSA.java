@@ -348,8 +348,8 @@ public class GSA implements LocalTransformer {
 		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-//			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
+			nIsSame[blk.id] = compNIsSame(exp,vars,blk);//〇
+			xIsSame[blk.id] = compXIsSame(exp,vars,blk);//〇
 			//変数のkillが内科のチェック
 //			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
@@ -361,23 +361,23 @@ public class GSA implements LocalTransformer {
 	
 	//TODO 行っていることの確認と変更する必要の確認
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::NisSame"+blk.id);//
+//		System.out.println("::NisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
-			System.out.println(node);
-			System.out.println(":isKill");
+//			System.out.println(node);
+//			System.out.println(":isKill");
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
-			System.out.println(":isLoad");//
+//			System.out.println(":isLoad");//
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
-			System.out.println(":equals");
+//			System.out.println(":equals");
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 			if(node.kid(1).equals(exp)) { 
-				System.out.println("++TrueTrueTrueTrue++");
-				System.out.println(blk.id);
+//				System.out.println("++TrueTrueTrueTrue++");
+//				System.out.println(blk.id);
 				return true;
 			}
 		}
-		System.out.println("--FalseFalseFalseFalse--");
+//		System.out.println("--FalseFalseFalseFalse--");
 		return false;
 	}
 
@@ -385,29 +385,29 @@ public class GSA implements LocalTransformer {
 	//変数xIsSameはcompDSafeで用いられている
 	//同じ変数の定義をしている分がその先にあるかの判定。
 	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::XisSame");//
+		System.out.println("::XisSame"+blk.id);//
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
-//			System.out.println(node);//
-//			System.out.println("::isKill");//
+			System.out.println(node);//
+			System.out.println("::isKill");//
 			if(isKill(exp,node,vars,blk,p))break;//
 			//式の右辺を確認しようとしている。
 			//ロード命令省かなくてもいい。
-//			System.out.println(":isLoad");//
+			System.out.println(":isLoad");//
 			if(!isLoad(node)) continue;//
 //			if(!isLoad(node)) {
 //				if(node.kid(1).equals(exp))return true;
 //			}else if(isStore(node)){
 //				if(node.kid(0).equals(exp))return true;
 //			}
-//			System.out.println(":equals");
+			System.out.println(":equals");
 			if(node.kid(1).equals(exp)) {
 				System.out.println("++TrueTrueTrueTrue++");
 				System.out.println(blk.id);
 				return true;
 			}
 		}
-//		System.out.println("--FalseFalseFalseFalse--");
+		System.out.println("--FalseFalseFalseFalse--");
 		return false;
 	}
 	
