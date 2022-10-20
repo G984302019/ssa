@@ -348,13 +348,13 @@ public class GSA implements LocalTransformer {
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);
-			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
+//			xIsSame[blk.id] = compXIsSame(exp,vars,blk);
 			//変数のkillが内科のチェック
-			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+//			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
-			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+//			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			//
-			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+//			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
 		}
 	}
 	
@@ -363,12 +363,12 @@ public class GSA implements LocalTransformer {
 		System.out.println("::NisSame");//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
-//			System.out.println(node);
-//			System.out.println(":isKill");
+			System.out.println(node);
+			System.out.println(":isKill");
 			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
-//			System.out.println(":isLoad");//
+			System.out.println(":isLoad");//
 			if(!isLoad(node))continue;//isLoadがfalseだったら次のループ
-//			System.out.println(":equals");
+			System.out.println(":equals");
 //			if(node.kid(1).equals(exp)) return true;//渡されたノードの配列の一つ目と渡されたexpが同じならtrue
 			if(node.kid(1).equals(exp)) { 
 				System.out.println(blk.id);
@@ -376,7 +376,7 @@ public class GSA implements LocalTransformer {
 				return true;
 			}
 		}
-//		System.out.println("--FalseFalseFalseFalse--");
+		System.out.println("--FalseFalseFalseFalse--");
 		return false;
 	}
 
@@ -599,8 +599,13 @@ public class GSA implements LocalTransformer {
 			change = false;
 			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
 				BasicBlk blk = (BasicBlk)p.elem();
+				System.out.println(blk.id);//
 				boolean x = false;
-				if(xIsSame[blk.id]) x = true;
+//				if(xIsSame[blk.id]) x = true;
+				if(xIsSame[blk.id]) {//
+					System.out.println("___xIsSame___");//
+					x = true;//
+				}//
 				else if(blk!=f.flowGraph().exitBlk()){
 					x = true;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
@@ -614,7 +619,6 @@ public class GSA implements LocalTransformer {
 				boolean n = nIsSame[blk.id] || x;
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 				if(change) {
-					System.out.println(blk.id);
 					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
 					if(xDSafe[blk.id]!=x) System.out.println("^^^xxx^^^"+x);
 				}
@@ -770,7 +774,8 @@ public class GSA implements LocalTransformer {
 		ArrayList insertNode = new ArrayList();
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+//			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
@@ -782,7 +787,7 @@ public class GSA implements LocalTransformer {
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node.kid(0),addr,vars);
-				compDSafe();
+//				compDSafe();
 //				dce(node,addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
