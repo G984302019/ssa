@@ -361,7 +361,7 @@ public class GSA implements LocalTransformer {
 	
 	//TODO 行っていることの確認と変更する必要の確認
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::NisSame");//
+		System.out.println("::NisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 			System.out.println(node);
