@@ -385,25 +385,25 @@ public class GSA implements LocalTransformer {
 	//変数xIsSameはcompDSafeで用いられている
 	//同じ変数の定義をしている分がその先にあるかの判定。
 	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::XisSame"+blk.id);//
+//		System.out.println("::XisSame"+blk.id);//
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
-			System.out.println(node);//
-			System.out.println("::isKill");//
+//			System.out.println(node);//
+//			System.out.println("::isKill");//
 			if(isKill(exp,node,vars,blk,p))break;//
 			//式の右辺を確認しようとしている。
 			//ロード命令省かなくてもいい。
-			System.out.println(":isLoad");//
+//			System.out.println(":isLoad");//
 			if(!isLoad(node)) continue;//
 //			if(!isLoad(node)) {
 //				if(node.kid(1).equals(exp))return true;
 //			}else if(isStore(node)){
 //				if(node.kid(0).equals(exp))return true;
 //			}
-			System.out.println(":equals");
+//			System.out.println(":equals");
 			if(node.kid(1).equals(exp)) {
-				System.out.println("++TrueTrueTrueTrue++");
-				System.out.println(blk.id);
+//				System.out.println("++TrueTrueTrueTrue++");
+//				System.out.println(blk.id);
 				return true;
 			}
 		}
