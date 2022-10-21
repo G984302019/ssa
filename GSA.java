@@ -482,37 +482,46 @@ public class GSA implements LocalTransformer {
 	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
 	//またxsameaddrの更新
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
-		System.out.println("::compTranspe");//
+//		System.out.println("::compTranspe");//
 		boolean xt = true;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
-			System.out.println(node);//
-			System.out.println(":iskill");//
+//			System.out.println(node);//
+//			System.out.println(":iskill");//
 			if(isKill(exp,node,vars,blk,p)){
-				System.out.println("----false----");
+//				System.out.println("----false----");
 				xt = false;
 				break;
 			}
-			System.out.println(":isload_isstore");//
+//			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
-			System.out.println(":sameaddr");//
+//			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 		}
-		System.out.println("++++"+xt+"++++");
+//		System.out.println("++++"+xt+"++++");
 		return xt;
 	}
 	
 	//同様のストア命令に対する変更も、異なる配列への参照もない場合true
 	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+		System.out.println("::compTranspAddr");//
 		if(!Transp_e[blk.id])return false;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
+			System.out.println(node);//
+			System.out.println(":isKill");//
 			if(isKill(exp,node,vars,blk,p))return false;
+			System.out.println(":isload&&isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
+			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)){
+				System.out.println(":");//
 				nSameAddr[blk.id] = true;
 				if(node.kid(1).equals(exp)) break;
-			}else return false;
+			}else {
+				System.out.println("^^^^false^^^^");//
+				return false;
+			}
 		}
 		return true;
 	}
@@ -796,7 +805,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-//				dce(node.kid(0),addr,vars);
+//				dce(node.kid(0),addr,vars,p);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -805,17 +814,19 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO dceメソッドを完成させる
-	public void dce(LirNode node, LirNode addr, ArrayList vars) {
+	public void dce(LirNode node, LirNode addr, ArrayList vars,BiLink pp) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-		for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
+		boolean dc = true;
+		for(BiLink p=f.flowGraph().basicBlkList.last();p!=pp;p=p.prev()){
 			BasicBlk blk = (BasicBlk)p.elem();
 			if(blk==f.flowGraph().exitBlk()) continue; 
-			if(!xDSafe[blk.id]) dce[blk.id]=true;
-			p.unlink();
-			break;
+			if(!xDSafe[blk.id]||!nDSafe[blk.id]||Transp_addr[blk.id]) dc=false;
+		}
+		if(dc) {
+			pp.unlink();
 		}
 	}
          
