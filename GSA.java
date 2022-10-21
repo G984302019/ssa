@@ -626,7 +626,7 @@ public class GSA implements LocalTransformer {
 				nDSafe[blk.id] = n;
 				xDSafe[blk.id] = x;
 			}
-			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 				BasicBlk blk = (BasicBlk)p.elem();
 				System.out.println("++++++++++++++++++++++++++");
 				System.out.println(blk.id);
@@ -796,7 +796,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 				compLocalProperty(node.kid(0),addr,vars);
 				compDSafe();
-//				dce(node,addr,vars);
+//				dce(node.kid(0),addr,vars);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
