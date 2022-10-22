@@ -504,22 +504,22 @@ public class GSA implements LocalTransformer {
 	
 	//同様のストア命令に対する変更も、異なる配列への参照もない場合true
 	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
-		System.out.println("::compTranspAddr");//
+//		System.out.println("::compTranspAddr");//
 		if(!Transp_e[blk.id])return false;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
-			System.out.println(node);//
-			System.out.println(":isKill");//
+//			System.out.println(node);//
+//			System.out.println(":isKill");//
 			if(isKill(exp,node,vars,blk,p))return false;
-			System.out.println(":isload&&isstore");//
+//			System.out.println(":isload&&isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
-			System.out.println(":sameaddr");//
+//			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)){
-				System.out.println(":");//
+//				System.out.println(":");//
 				nSameAddr[blk.id] = true;
 				if(node.kid(1).equals(exp)) break;
 			}else {
-				System.out.println("^^^^false^^^^");//
+//				System.out.println("^^^^false^^^^");//
 				return false;
 			}
 		}
@@ -791,8 +791,8 @@ public class GSA implements LocalTransformer {
 		ArrayList insertNode = new ArrayList();
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
-//			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
+//			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
@@ -802,10 +802,11 @@ public class GSA implements LocalTransformer {
 				LirNode addr = getAddr(node.kid(0));//〇getadd
 				//varsは添え字
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(0));//〇collectvars
-				compLocalProperty(node.kid(0),addr,vars);
+				System.out.println(node);
+//				collectVars(vars,node.kid(0));//〇collectvars
+//				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-//				dce(node.kid(0),addr,vars,p);
+				dce(node.kid(0),addr,vars,p);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -826,6 +827,7 @@ public class GSA implements LocalTransformer {
 			if(!xDSafe[blk.id]||!nDSafe[blk.id]||Transp_addr[blk.id]) dc=false;
 		}
 		if(dc) {
+			System.out.println("unlink");
 			pp.unlink();
 		}
 	}
