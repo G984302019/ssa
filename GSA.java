@@ -820,8 +820,9 @@ public class GSA implements LocalTransformer {
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
 		compDSafe();
+		System.out.println("\\\\dce\\\\");
 		boolean dc = true;
-		for(BiLink p=blk.succList();!p.atEnd();p.next()) {
+		for(BiLink p=blk.succList().first();!p.atEnd();p.next()) {
 			BasicBlk succ=(BasicBlk)p.elem();
 			System.out.println(succ.id); 
 			if(!xDSafe[blk.id]||!nDSafe[blk.id]) dc=false;
