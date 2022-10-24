@@ -821,10 +821,10 @@ public class GSA implements LocalTransformer {
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 		boolean dc = true;
-		for(BiLink p=f.flowGraph().basicBlkList.last();p.equals(pp);p=p.prev()){
+		for(BiLink p=((BasicBlk)pp.elem()).succList();!p.atEnd();p=p.next()){
 			BasicBlk blk = (BasicBlk)p.elem();
 			System.out.println(blk.id);
-			if(blk==f.flowGraph().exitBlk()) continue; 
+			if(blk==f.flowGraph().exitBlk()) break; 
 			if(!xDSafe[blk.id]||!nDSafe[blk.id]) dc=false;
 		}
 		if(dc) {
