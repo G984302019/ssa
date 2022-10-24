@@ -825,7 +825,10 @@ public class GSA implements LocalTransformer {
 		for(BiLink p=blk.succList().first();!p.atEnd();p.next()) {
 			BasicBlk succ=(BasicBlk)p.elem();
 			System.out.println(succ.id); 
-			if(!xDSafe[blk.id]||!nDSafe[blk.id]) dc=false;
+			if(!xDSafe[blk.id]||!nDSafe[blk.id]) {
+				dc=false;
+				break;
+			}
 		}
 		if(dc) {
 			System.out.println("unlink");
