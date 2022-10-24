@@ -806,7 +806,7 @@ public class GSA implements LocalTransformer {
 //				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-				dce(node.kid(0),addr,vars,p);
+				dce(node.kid(0),addr,vars,blk,p);
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -815,17 +815,17 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO dceメソッドを完成させる
-	public void dce(LirNode node, LirNode addr, ArrayList vars,BiLink pp) {
+	public void dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink pp) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 		boolean dc = true;
-		for(pp=pp;!pp.atEnd();pp=pp.next()){
-			BasicBlk blk = (BasicBlk)pp.elem();
-			System.out.println(blk.id);
-			if(blk==f.flowGraph().exitBlk()) break; 
-			if(!xDSafe[blk.id]||!nDSafe[blk.id]) dc=false;
+		for(BiLink p=blk.succList();!p.atEnd();p.next()) {
+			BasicBlk succ=(BasicBlk)p.elem();
+			System.out.println(succ.id); 
+			if(!xDSafe[blk.id]) dc=false;
+			else if(!xDSafe[blk.id]||!nDSafe[blk.id]) dc=false;
 		}
 		if(dc) {
 			System.out.println("unlink");
