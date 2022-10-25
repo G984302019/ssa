@@ -611,17 +611,17 @@ public class GSA implements LocalTransformer {
 				BasicBlk blk = (BasicBlk)p.elem();
 				System.out.println(blk.id);//
 				boolean x = false;
-//				if(xIsSame[blk.id]) x = true;
-				if(xIsSame[blk.id]) {//
-					System.out.println("___xIsSame___");//
-					x = true;//
-				}//
+				if(xIsSame[blk.id]) x = true;
+//				if(xIsSame[blk.id]) {//
+//					System.out.println("___xIsSame___");//
+//					x = true;//
+//				}//
 				else if(blk!=f.flowGraph().exitBlk()){
-					x = true;
+					x = false;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
 						BasicBlk succ = (BasicBlk)q.elem();
-						if(!nDSafe[succ.id]){
-							x = false;
+						if(nDSafe[succ.id]){
+							x = true;
 							break;
 						}
 					}
