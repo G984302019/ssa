@@ -803,6 +803,7 @@ public class GSA implements LocalTransformer {
 				//varsは添え字
 				ArrayList vars = new ArrayList();
 				System.out.println(node);
+				System.out.println(blk.id);
 //				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
@@ -819,7 +820,6 @@ public class GSA implements LocalTransformer {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
-		System.out.println(blk.id);
 		compDSafe();
 		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
