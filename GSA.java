@@ -807,7 +807,7 @@ public class GSA implements LocalTransformer {
 				ArrayList vars = new ArrayList();
 				System.out.println(node);
 				System.out.println(blk.id);
-//				collectVars(vars,node.kid(0));//〇collectvars
+				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
 				dce(node.kid(0),addr,vars,blk,p);
