@@ -819,6 +819,7 @@ public class GSA implements LocalTransformer {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
+		System.out.println(blk.id);
 		compDSafe();
 		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
