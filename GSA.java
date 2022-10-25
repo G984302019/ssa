@@ -823,9 +823,7 @@ public class GSA implements LocalTransformer {
 		System.out.println("\\\\dce\\\\");
 		boolean dc = true;
 		for(BiLink p=blk.succList().first();!p.atEnd();p.next()) {
-			BasicBlk succ=(BasicBlk)p.elem();
-			System.out.println(succ.id); 
-			if(!xDSafe[blk.id]||!nDSafe[blk.id]) {
+			if(!xDSafe[blk.id]) {
 				dc=false;
 				break;
 			}
