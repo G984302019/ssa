@@ -847,7 +847,7 @@ public class GSA implements LocalTransformer {
       displayBasicBlk();
       testGCM();
       	
-//      displayBasicBlk();
+      displayBasicBlk();
       System.out.println("------------------------------");
 //      checkDCE();
 //      displayBasicBlk();
