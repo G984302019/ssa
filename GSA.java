@@ -794,6 +794,7 @@ public class GSA implements LocalTransformer {
 //			BasicBlk blk = bVecInOrderOfRPost[i];
 			BasicBlk blk = (BasicBlk)pp.elem();//
 //			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+			System.out.println(blk.id);
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
 				//TODO この下の挙動は何なのかを探る。
