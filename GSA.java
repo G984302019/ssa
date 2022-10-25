@@ -821,14 +821,7 @@ public class GSA implements LocalTransformer {
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 		System.out.println("\\\\dce\\\\");
-		boolean dc = true;
-		for(BiLink p=blk.succList().first();!p.atEnd();p.next()) {
-			if(!xDSafe[blk.id]) {
-				dc=false;
-				break;
-			}
-		}
-		if(dc) {
+		if(!xDSafe[blk.id]) {
 			System.out.println("unlink");
 			pp.unlink();
 		}
