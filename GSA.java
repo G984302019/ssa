@@ -789,7 +789,7 @@ public class GSA implements LocalTransformer {
 	private void testGCM() {
 	//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+		for(int i=bVecInOrderOfRPost.length-1;i>=0; i--) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 //			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
