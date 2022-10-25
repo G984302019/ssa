@@ -56,7 +56,7 @@ public class GSA implements LocalTransformer {
 	public BasicBlk[] bVecInOrderOfRPost;
     
     int idBound;
-    boolean[] dce;
+    boolean dce;
 	boolean[] nSameAddr;
 	boolean[] xSameAddr;
 	boolean[] nIsSame;
@@ -120,27 +120,7 @@ public class GSA implements LocalTransformer {
     	LirNode newNode = env.lir.operator(Op.SET, newSt.type, nn, newSt.kid(1),ImList.Empty);
 //    	System.out.println("new node:"+newNode);
     	return newNode;
-    }
-    
-    void dcedisplay() {
- 	   System.out.println("-------------------------------------------");
- 	   for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
- 		   BasicBlk v=(BasicBlk)p.elem();
- 		   for(BiLink bl=v.instrList().first();!bl.atEnd();bl=bl.next()){
- 			   LirNode node=(LirNode)bl.elem();
- 			   if(dce[node.id]) {
- 				   p.unlink();
- 				   break;
- 			   }else {
- 				   System.out.println(node);
- 		   
- 			   }
- 		   }
- 	   }
- 	   System.out.println("-------------------------------------------");
- 	   System.out.println("-------------------------------------------");
-     }
-    
+    }    
     
    void displayBasicBlk() {
 	   System.out.println("-------------------------------------------");
@@ -333,7 +313,6 @@ public class GSA implements LocalTransformer {
     
     //最初にローカルプロパティを全て初期化する。
 	void compLocalProperty(LirNode exp, LirNode addr, ArrayList vars){
-		dce = new boolean[idBound];
 		xSameAddr = new boolean[idBound];
 		nSameAddr = new boolean[idBound];
 		xIsSame = new boolean[idBound];
@@ -341,7 +320,6 @@ public class GSA implements LocalTransformer {
 		Transp_e = new boolean[idBound];
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
-		Arrays.fill(dce, false);
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
 		System.out.println("exp:");
@@ -811,6 +789,9 @@ public class GSA implements LocalTransformer {
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
 				dce(node.kid(0),addr,vars,blk,p);
+				if(dce==true) {
+					p.unlink();
+				}
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -822,12 +803,13 @@ public class GSA implements LocalTransformer {
 	public void dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink pp) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
+		dce = false;
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
 			System.out.println("unlink");
-			pp.unlink();
+			dce = true;
 		}
 	}
          
