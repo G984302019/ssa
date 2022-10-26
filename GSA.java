@@ -589,7 +589,8 @@ public class GSA implements LocalTransformer {
 				BasicBlk blk = (BasicBlk)p.elem();
 				System.out.println(blk.id);//
 				boolean x = false;
-				if(xIsSame[blk.id]) x = true;
+//				if(xIsSame[blk.id]) x = true;
+				if(xIsSame[blk.id] || xSameAddr[blk.id]) x = true;//
 //				if(xIsSame[blk.id]) {//
 //					System.out.println("___xIsSame___");//
 //					x = true;//
@@ -604,7 +605,8 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = nIsSame[blk.id] || x;
+//				boolean n = nIsSame[blk.id] || x;
+				boolean n = nIsSame[blk.id] || nSameAddr[blk.id] || x;//
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
@@ -768,9 +770,10 @@ public class GSA implements LocalTransformer {
 	//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
 //		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-		for(BiLink pp=f.flowGraph().basicBlkList.last();!pp.atEnd();pp=pp.prev()) {//
-//			BasicBlk blk = bVecInOrderOfRPost[i];
-			BasicBlk blk = (BasicBlk)pp.elem();//
+		for(int i=bVecInOrderOfRPost.length;i>0;i--) {
+//		for(BiLink pp=f.flowGraph().basicBlkList.last();!pp.atEnd();pp=pp.prev()) {//
+			BasicBlk blk = bVecInOrderOfRPost[i];
+//			BasicBlk blk = (BasicBlk)pp.elem();//
 //			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			System.out.println(blk.id);
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
