@@ -64,6 +64,7 @@ public class GSA implements LocalTransformer {
 	boolean[] Transp_e;
 	boolean[] Transp_addr;
 	boolean[] xTransp_addr;
+	boolean[] xTransp_use;
 	public boolean[] nDelayed;
 	public boolean[] xDelayed;
 	public boolean[] nEarliest;
@@ -132,7 +133,6 @@ public class GSA implements LocalTransformer {
 			   System.out.println(node);
 		   }
 	   }
-	   System.out.println("-------------------------------------------");
 	   System.out.println("-------------------------------------------");
     }
    
@@ -320,6 +320,7 @@ public class GSA implements LocalTransformer {
 		Transp_e = new boolean[idBound];
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
+		xTransp_use = new boolean[idBound];
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
 		System.out.println("exp:");
@@ -333,7 +334,8 @@ public class GSA implements LocalTransformer {
 			//配列のアクセス順序が崩れていないかのチェック。
 			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			//
-			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);			
+			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
+			xTransp_use[blk.id] = compXTranspuse(exp,addr,vars,blk);
 		}
 	}
 	
@@ -446,6 +448,56 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
+	//変数nDSafe,xDSafeを変更するためのメソッド
+		//変数nDSafeはノード上部のDownSafe
+		//変数xDSafeは
+		public void compDSafe() {
+			System.out.println("compDSafe");
+			nDSafe = new boolean[idBound];
+			xDSafe = new boolean[idBound];
+			Arrays.fill(nDSafe, true);
+			Arrays.fill(xDSafe, true);
+			boolean change = true;
+			while(change){
+				change = false;
+				for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
+					BasicBlk blk = (BasicBlk)p.elem();
+					System.out.println(blk.id);//
+					boolean x = false;
+					if(xIsSame[blk.id]||xTransp_use[blk.id]) x = true;
+//					if(xIsSame[blk.id]) {//
+//						System.out.println("___xIsSame___");//
+//						x = true;//
+//					}//
+					else if(blk!=f.flowGraph().exitBlk()){
+						x = false;
+						for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
+							BasicBlk succ = (BasicBlk)q.elem();
+							if(nDSafe[succ.id]){
+								x = true;
+								break;
+							}
+						}
+					}
+					boolean n = nIsSame[blk.id] || x;
+					if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
+//					if(change) {
+//						if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
+//						if(xDSafe[blk.id]!=x) System.out.println("^^^xxx^^^"+x);
+//					}
+					nDSafe[blk.id] = n;
+					xDSafe[blk.id] = x;
+				}
+			}
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				System.out.println("++++++++++++++++++++++++++");
+				System.out.println(blk.id);
+				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
+				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
+			}
+		}
+	
 	//TODO 行っていることと変える必要の確認
 	public void compKeepOrder(){
 		nKeepOrder = new boolean[idBound];
@@ -455,6 +507,15 @@ public class GSA implements LocalTransformer {
 			nKeepOrder[blk.id] = !nUSafe[blk.id] || Transp_addr[blk.id];
 			xKeepOrder[blk.id] = !xUSafe[blk.id] || xTransp_addr[blk.id];
 		}
+	}
+	
+	private boolean compXTranspuse(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk) {
+		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {
+			LirNode node = (LirNode)p.elem();
+			if(!isLoad(node)) continue;
+			if(sameAddr(node,addr)) return true;
+		}
+		return false;
 	}
 
 	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
@@ -475,6 +536,7 @@ public class GSA implements LocalTransformer {
 			if(!isLoad(node)&&!isStore(node))continue;
 //			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
+//			if(xSameAddr[blk.id]) System.out.println("xsameaddr");
 		}
 //		System.out.println("++++"+xt+"++++");
 		return xt;
@@ -569,58 +631,6 @@ public class GSA implements LocalTransformer {
 				if(nUSafe[blk.id]!=n || xUSafe[blk.id]!=x) change = true;
 				nUSafe[blk.id] = n;
 				xUSafe[blk.id] = x;
-			}
-		}
-	}
-	
-	//変数nDSafe,xDSafeを変更するためのメソッド
-	//変数nDSafeはノード上部のDownSafe
-	//変数xDSafeは
-	public void compDSafe() {
-		System.out.println("compDSafe");
-		nDSafe = new boolean[idBound];
-		xDSafe = new boolean[idBound];
-		Arrays.fill(nDSafe, true);
-		Arrays.fill(xDSafe, true);
-		boolean change = true;
-		while(change){
-			change = false;
-			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
-				BasicBlk blk = (BasicBlk)p.elem();
-				System.out.println(blk.id);//
-				boolean x = false;
-//				if(xIsSame[blk.id]) x = true;
-				if(xIsSame[blk.id] || xSameAddr[blk.id]) x = true;//
-//				if(xIsSame[blk.id]) {//
-//					System.out.println("___xIsSame___");//
-//					x = true;//
-//				}//
-				else if(blk!=f.flowGraph().exitBlk()){
-					x = false;
-					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
-						BasicBlk succ = (BasicBlk)q.elem();
-						if(nDSafe[succ.id]){
-							x = true;
-							break;
-						}
-					}
-				}
-//				boolean n = nIsSame[blk.id] || x;
-				boolean n = nIsSame[blk.id] || nSameAddr[blk.id] || x;//
-				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
-//				if(change) {
-//					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
-//					if(xDSafe[blk.id]!=x) System.out.println("^^^xxx^^^"+x);
-//				}
-				nDSafe[blk.id] = n;
-				xDSafe[blk.id] = x;
-			}
-			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-				BasicBlk blk = (BasicBlk)p.elem();
-				System.out.println("++++++++++++++++++++++++++");
-				System.out.println(blk.id);
-				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
-				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
 			}
 		}
 	}
@@ -851,7 +861,6 @@ public class GSA implements LocalTransformer {
       testGCM();
       	
       displayBasicBlk();
-      System.out.println("------------------------------");
 //      checkDCE();
 //      displayBasicBlk();
     
