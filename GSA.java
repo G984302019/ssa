@@ -791,7 +791,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-				dce(node.kid(0),addr,vars,blk,p);
+				dce(node.kid(0),addr,vars,blk);
 				if(dce==true) {
 					p.unlink();
 				}
@@ -803,7 +803,7 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO dceメソッドを完成させる
-	public void dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink pp) {
+	public void dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		dce = false;
