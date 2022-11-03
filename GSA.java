@@ -264,6 +264,7 @@ public class GSA implements LocalTransformer {
     
     //そのノードが削除できる可能性があるものなのかを判断するメソッド
     //a[i]=0の時のi,x=yの時のyなど変数の値を変更する可能性があるノード
+    //TODO 同様の配列の場合はtrueにするようにする。例えばa[i]の時のa
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 		//TODO 局所配列の場合は詳細な解析をするようにする。
 //    	System.out.println("isKill"+node);
@@ -339,7 +340,7 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
-	//TODO 行っていることの確認と変更する必要の確認
+	//TODO GSAだとisLoadの部分に変更を加えなければならないかもしれない。
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
 //		System.out.println("::NisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
@@ -807,6 +808,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
+				//TODO dceをbooleanで変えるようにする
 				dce(node.kid(0),addr,vars,blk);
 				if(dce==true) {
 					p.unlink();
@@ -855,13 +857,10 @@ public class GSA implements LocalTransformer {
       
 //      localCodeMotion();
 //      globalCodeMotion();
-//      displayBasicBlk();
+      displayBasicBlk();
       testGCM();
-      	
-//      displayBasicBlk();
-//      checkDCE();
-//      displayBasicBlk();
-    
+      displayBasicBlk();
+      
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
 //         	
