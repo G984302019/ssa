@@ -795,8 +795,8 @@ public class GSA implements LocalTransformer {
 //			System.out.println(blk.id);//
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
-				//TODO この下の挙動は何なのかを探る。
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
+				System.out.println(node);
 				insertNode.add(node.kid(0).makeCopy(env.lir));
 				//addrは変数名,a[1]=0だったらaが出る感じ
 //				LirNode addr = getAddr(node.kid(1));
