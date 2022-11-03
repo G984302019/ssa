@@ -490,13 +490,13 @@ public class GSA implements LocalTransformer {
 					xDSafe[blk.id] = x;
 				}
 			}
-//			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-//				BasicBlk blk = (BasicBlk)p.elem();
-//				System.out.println("++++++++++++++++++++++++++");
-//				System.out.println(blk.id);
-//				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
-//				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
-//			}
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				System.out.println("++++++++++++++++++++++++++");
+				System.out.println(blk.id);
+				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
+				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
+			}
 		}
 	
 	//TODO 行っていることと変える必要の確認
@@ -797,6 +797,7 @@ public class GSA implements LocalTransformer {
 				LirNode node = (LirNode)p.elem();
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
 				System.out.println(node);
+//				System.out.println("+++++++++++");
 				insertNode.add(node.kid(0).makeCopy(env.lir));
 				//addrは変数名,a[1]=0だったらaが出る感じ
 //				LirNode addr = getAddr(node.kid(1));
