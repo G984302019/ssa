@@ -56,7 +56,6 @@ public class GSA implements LocalTransformer {
 	public BasicBlk[] bVecInOrderOfRPost;
     
     int idBound;
-    boolean dce;
 	boolean[] nSameAddr;
 	boolean[] xSameAddr;
 	boolean[] nIsSame;
@@ -64,7 +63,6 @@ public class GSA implements LocalTransformer {
 	boolean[] Transp_e;
 	boolean[] Transp_addr;
 	boolean[] xTransp_addr;
-	boolean[] xTransp_use;
 	public boolean[] nDelayed;
 	public boolean[] xDelayed;
 	public boolean[] nEarliest;
@@ -266,10 +264,9 @@ public class GSA implements LocalTransformer {
     //a[i]=0の時のi,x=yの時のyなど変数の値を変更する可能性があるノード
     //TODO 同様の配列の場合はtrueにするようにする。例えばa[i]の時のa
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
-		//TODO 局所配列の場合は詳細な解析をするようにする。
 //    	System.out.println("isKill"+node);
 		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
-//		if(isStore(node))return true;//TODO 局所配列
+		if(isStore(node))return true;
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
 //		System.out.println(false);
@@ -321,7 +318,6 @@ public class GSA implements LocalTransformer {
 		Transp_e = new boolean[idBound];
 		Transp_addr = new boolean[idBound];
 		xTransp_addr = new boolean[idBound];
-		xTransp_use = new boolean[idBound];
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
 //		System.out.println("exp:");
@@ -336,7 +332,6 @@ public class GSA implements LocalTransformer {
 			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
 			//
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
-			xTransp_use[blk.id] = compXTranspuse(exp,addr,vars,blk);
 		}
 	}
 	
@@ -465,12 +460,12 @@ public class GSA implements LocalTransformer {
 					BasicBlk blk = (BasicBlk)p.elem();
 //					System.out.println(blk.id);//
 					boolean x = false;
-					if(xIsSame[blk.id]||xTransp_use[blk.id]) x = true;
+					if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
 //					if(xIsSame[blk.id]) {//
 //						System.out.println("___xIsSame___");//
 //						x = true;//
 //					}//
-					else if(blk!=f.flowGraph().exitBlk()){
+					if(blk!=f.flowGraph().exitBlk()){
 						x = false;
 						for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
 							BasicBlk succ = (BasicBlk)q.elem();
@@ -508,15 +503,6 @@ public class GSA implements LocalTransformer {
 			nKeepOrder[blk.id] = !nUSafe[blk.id] || Transp_addr[blk.id];
 			xKeepOrder[blk.id] = !xUSafe[blk.id] || xTransp_addr[blk.id];
 		}
-	}
-	
-	private boolean compXTranspuse(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk) {
-		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {
-			LirNode node = (LirNode)p.elem();
-			if(!isLoad(node)) continue;
-			if(sameAddr(node,addr)) return true;
-		}
-		return false;
 	}
 
 	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
@@ -810,8 +796,7 @@ public class GSA implements LocalTransformer {
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
 				//TODO dceをbooleanで変えるようにする
-				dce(node.kid(0),addr,vars,blk);
-				if(dce==true) {
+				if(dce(node.kid(0),addr,vars,blk)) {
 					p.unlink();
 				}
 //				printGlobalProp(node);
@@ -822,17 +807,17 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO dceメソッドを完成させる
-	public void dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
+	public boolean dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		dce = false;
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 //		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
 //			System.out.println("unlink");
-			dce = true;
+			return true;
 		}
+		return false;
 	}
          
     public boolean doIt(Function function,ImList args) {
