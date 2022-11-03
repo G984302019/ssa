@@ -323,8 +323,8 @@ public class GSA implements LocalTransformer {
 		xTransp_use = new boolean[idBound];
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
-		System.out.println("exp:");
-		System.out.println(exp);
+//		System.out.println("exp:");
+//		System.out.println(exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk);//〇
@@ -452,7 +452,7 @@ public class GSA implements LocalTransformer {
 		//変数nDSafeはノード上部のDownSafe
 		//変数xDSafeは
 		public void compDSafe() {
-			System.out.println("compDSafe");
+//			System.out.println("compDSafe");
 			nDSafe = new boolean[idBound];
 			xDSafe = new boolean[idBound];
 			Arrays.fill(nDSafe, true);
@@ -462,7 +462,7 @@ public class GSA implements LocalTransformer {
 				change = false;
 				for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
 					BasicBlk blk = (BasicBlk)p.elem();
-					System.out.println(blk.id);//
+//					System.out.println(blk.id);//
 					boolean x = false;
 					if(xIsSame[blk.id]||xTransp_use[blk.id]) x = true;
 //					if(xIsSame[blk.id]) {//
@@ -489,13 +489,13 @@ public class GSA implements LocalTransformer {
 					xDSafe[blk.id] = x;
 				}
 			}
-			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-				BasicBlk blk = (BasicBlk)p.elem();
-				System.out.println("++++++++++++++++++++++++++");
-				System.out.println(blk.id);
-				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
-				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
-			}
+//			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+//				BasicBlk blk = (BasicBlk)p.elem();
+//				System.out.println("++++++++++++++++++++++++++");
+//				System.out.println(blk.id);
+//				System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
+//				System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
+//			}
 		}
 	
 	//TODO 行っていることと変える必要の確認
@@ -527,6 +527,7 @@ public class GSA implements LocalTransformer {
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
 //			System.out.println(":iskill");//
+			//対象の配列のインスタンスを変更する可能性がある場合true;
 			if(isKill(exp,node,vars,blk,p)){
 //				System.out.println("----false----");
 				xt = false;
@@ -641,7 +642,7 @@ public class GSA implements LocalTransformer {
 		return (type=='I' || type=='F');
 	}
 	
-	//TODO checkLocalメソッドで行っていることの確認
+	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
 	boolean checkLocal(LirNode node, LirNode addr, ArrayList localLoad, ArrayList localAddr){
 		if(localLoad.contains(node.kid(1)))return true;
 		if(localAddr.contains(addr)){
@@ -730,6 +731,7 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//TODO localCodeMotionメソッドの見直し
+	//一つの節内での移動
 	public void localCodeMotion(){
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
@@ -742,12 +744,16 @@ public class GSA implements LocalTransformer {
 					localAddr = new ArrayList();
 				}
 				if(!isStore(node))continue;
-				LirNode addr = getAddr(node.kid(1));
+				LirNode addr = getAddr(node.kid(0));
 				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(1));
+				collectVars(vars,node.kid(0));
+				//checklocal
+				//localcm　同一の配列を纏めるための条件
 				if(checkLocal(node,addr,localLoad,localAddr)) localCM(node,addr,vars,blk,p);
-				if(!isLoad(node)) continue;
-				localLoad.add(node.kid(1).makeCopy(env.lir));
+				if(!isStore(node)) continue;
+				//localload:b[0]の配列があったらb[0]を追加している。
+				//localaddr:b[0]の配列があったらbを追加している
+				localLoad.add(node.kid(0).makeCopy(env.lir));
 				localAddr.add(addr.makeCopy(env.lir));
 			}
 		}
@@ -794,10 +800,10 @@ public class GSA implements LocalTransformer {
 				//addrは変数名,a[1]=0だったらaが出る感じ
 //				LirNode addr = getAddr(node.kid(1));
 				LirNode addr = getAddr(node.kid(0));//〇getadd
-				//varsは添え字
+				//varsは添え字、a[x]=0だったらxが出る感じ
 				ArrayList vars = new ArrayList();
-				System.out.println("node:"+node);
-				System.out.println("blk.id:"+blk.id);
+//				System.out.println("node:"+node);
+//				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
@@ -819,9 +825,9 @@ public class GSA implements LocalTransformer {
 		dce = false;
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-		System.out.println("\\\\dce\\\\");
+//		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
-			System.out.println("unlink");
+//			System.out.println("unlink");
 			dce = true;
 		}
 	}
@@ -847,38 +853,15 @@ public class GSA implements LocalTransformer {
       idBound = f.flowGraph().idBound();
       bVecInOrderOfRPost = dfst.blkVectorByRPost();
       
-//      for(BiLink pp=f.flowGraph().basicBlkList.first();!pp.atEnd();pp=pp.next()){
-//    	  BasicBlk v=(BasicBlk)pp.elem();        
-//    	  for(BiLink p=v.instrList().first();!p.atEnd();p=p.next()){
-//    		  LirNode node=(LirNode)p.elem();
-//    		  System.out.println(node);
-//    	  }
-//      }
-      
 //      localCodeMotion();
 //      globalCodeMotion();
-      displayBasicBlk();
+//      displayBasicBlk();
       testGCM();
       	
-      displayBasicBlk();
+//      displayBasicBlk();
 //      checkDCE();
 //      displayBasicBlk();
     
-      
-       		
-        	
-        	
-        	
-        	
-//             	if(node.opCode!=Op.SET) continue;
-//             	if(node.kid(1).opCode==Op.MEM) continue;
-//				System.out.println("== Checking target ==");
-//            	System.out.println(node);
-//             	System.out.println("== Checking BasicBlk ==");
-//             	displayBasicBlk(v);
-
-             
-            
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
 //         	
@@ -891,52 +874,7 @@ public class GSA implements LocalTransformer {
 //        	 	}
 //    	  }    
 //      }
-//      
-//      boolean change = true;
-//      dce = new boolean[idBound];
-//      Arrays.fill(dce, true);
-//      while(change) {
-//      	change = false;
-//      	for(BiLink pp=f.flowGraph().basicBlkList.first();!pp.atEnd();pp=pp.next()){
-//      		BasicBlk v=(BasicBlk)pp.elem();        
-//      		for(BiLink p=v.instrList().first();!p.atEnd();p=p.next()){
-//      			LirNode node=(LirNode)p.elem();
-//      			boolean isSame=false;
-//      			if(p!=v.instrList().last()) {
-//      				for(LirNode n=(LirNode)p.next().elem();!p.atEnd();p=p.next()) {
-//      					if(isKill(node,n)) {
-//      						isSame = true;
-//      					}
-//      				}
-//      				if(!isSame) {
-//      					System.out.println(node);
-//      					p.unlink();
-//      					change = true;
-//      				}
-//      			}
-//      		}
-//      	}
-//      }
-//      
-//      dce = new boolean[idBound];
-//      Arrays.fill(dce, false);
-//      for(BiLink pp=f.flowGraph().basicBlkList.last();!pp.atEnd();pp=pp.prev()){
-//      	BasicBlk v=(BasicBlk)pp.elem();        
-//      	for(BiLink p=v.instrList().last();!p.atEnd();p=p.prev()){
-//      		LirNode node=(LirNode)p.elem();
-//      		boolean isSame=false;
-//      		for(LirNode n=(LirNode)p.next().elem();!p.atEnd();p=p.next()) {
-//      			if(isKill(node,n)) {
-//      				isSame = true;
-//      			}
-//      		}
-//      		if(!isSame) {
-//      			dce[node.id]=true;
-//      		}
-//      	}
-//      }
-    
-      //if(node.kid(0).opCode==Op.MEM && (node.kid(1).opCode==Op.REG || 
+
       f.flowGraph().touch();
       return(true);
     }
