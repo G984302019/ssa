@@ -846,7 +846,10 @@ public class GSA implements LocalTransformer {
 		compLocalProperty(node,addr,vars);
 		compDSafe();
 		xEarliest = new boolean[idBound];
+		nEarliest = new boolean[idBound];
 		Arrays.fill(xEarliest, true);
+		Arrays.fill(nEarliest, true);
+		nEarliest[blk.id] = false;
 		for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
 			BasicBlk pred = (BasicBlk)q.elem();
 			xEarliest[pred.id] = false;
