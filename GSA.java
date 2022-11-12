@@ -76,6 +76,10 @@ public class GSA implements LocalTransformer {
 	public boolean[] nDSafe;
 	public boolean[] xDSafe;
 	public boolean[] pUSafe;
+	public boolean[] nIsolated;
+	public boolean[] xIsolated;
+	public boolean[] nInsert;
+	public boolean[] xInsert;
 	public boolean[] nReplace;
 	public boolean[] xReplace;
 	
@@ -391,26 +395,38 @@ public class GSA implements LocalTransformer {
 	//TODO EarliestをPDE用に更新
 	//Earliestは変えていい。
 	//dceメソッドを呼び出したタイミングでEarliestをそのブロックでtrueに
-	public void compEarliest() {
-		nEarliest = new boolean[idBound];
+//	public void compEarliest() {
+//		nEarliest = new boolean[idBound];
+//		xEarliest = new boolean[idBound];
+//		Arrays.fill(nEarliest, true);
+//		Arrays.fill(xEarliest, true);
+//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+//			BasicBlk blk = (BasicBlk)p.elem();
+//			boolean n = nUSafe[blk.id] || nDSafe[blk.id];
+//			if(n && blk!=f.flowGraph().entryBlk()){
+//				n = false;
+//				for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+//					BasicBlk pred = (BasicBlk)q.elem();
+//					if(!(xUSafe[pred.id] || xDSafe[pred.id])){
+//						n = true;
+//						break;
+//					}
+//				}
+//			}
+//			nEarliest[blk.id] = n;
+//			xEarliest[blk.id] = (xUSafe[blk.id] || xDSafe[blk.id]) && (!Transp_e[blk.id] || !(nUSafe[blk.id] || nDSafe[blk.id]) && !n);
+//		}
+//	}
+	
+	public void compEarliest(BasicBlk blk) {
 		xEarliest = new boolean[idBound];
-		Arrays.fill(nEarliest, true);
+		nEarliest = new boolean[idBound];
 		Arrays.fill(xEarliest, true);
-		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-			BasicBlk blk = (BasicBlk)p.elem();
-			boolean n = nUSafe[blk.id] || nDSafe[blk.id];
-			if(n && blk!=f.flowGraph().entryBlk()){
-				n = false;
-				for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
-					BasicBlk pred = (BasicBlk)q.elem();
-					if(!(xUSafe[pred.id] || xDSafe[pred.id])){
-						n = true;
-						break;
-					}
-				}
-			}
-			nEarliest[blk.id] = n;
-			xEarliest[blk.id] = (xUSafe[blk.id] || xDSafe[blk.id]) && (!Transp_e[blk.id] || !(nUSafe[blk.id] || nDSafe[blk.id]) && !n);
+		Arrays.fill(nEarliest, true);
+		nEarliest[blk.id] = false;
+		for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+			BasicBlk pred = (BasicBlk)q.elem();
+			xEarliest[pred.id] = false;
 		}
 	}
 	
@@ -521,6 +537,27 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
+	//いらなそうっすね。
+	public void compPartialSafe() {
+		pUSafe = new boolean[idBound];
+		Arrays.fill(pUSafe, true);
+		for (BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk blk = (BasicBlk) p.elem();
+			boolean us = false;
+			if(nUSafe[blk.id]) us = true;
+			else{
+				for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
+					BasicBlk pred = (BasicBlk)q.elem();
+					if(xUSafe[pred.id]){
+						us = true;
+						break;
+					}
+				}
+			}
+			pUSafe[blk.id] = us;
+		}
+	}
+	
 	//TODO 行っていることと変える必要の確認
 	//
 	public void compKeepOrder(){
@@ -622,6 +659,35 @@ public class GSA implements LocalTransformer {
 			nLatest[blk.id] = nDelayed[blk.id] && (!xDelayed[blk.id] || nIsSame[blk.id]);
 		}
 	}
+	
+	public void compIsolated(){
+		nIsolated = new boolean[idBound];
+		xIsolated = new boolean[idBound];
+		Arrays.fill(nIsolated, true);
+		Arrays.fill(xIsolated, true);
+		boolean change = true;
+		while(change){
+			change = false;
+			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
+				BasicBlk blk = (BasicBlk)p.elem();
+				boolean x = true;
+				if(blk!=f.flowGraph().exitBlk()){
+					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
+						BasicBlk succ = (BasicBlk)q.elem();
+						if(!(nEarliest[succ.id] || !nIsSame[succ.id] && nIsolated[succ.id])){
+							x = false;
+							break;
+						}
+					}
+				}
+				boolean n = !Transp_e[blk.id] || !nIsSame[blk.id] && (xEarliest[blk.id] || x);
+//				boolean n = xEarliest[blk.id] || x;
+				if(nIsolated[blk.id]!=n || xIsolated[blk.id]!=x) change = true;
+				xIsolated[blk.id] = x;
+				nIsolated[blk.id] = n;
+			}
+		}
+	}
     
 	//Upsafeが必要なのかの確認とGSA用に更新
 	//別にいらなくね？
@@ -653,6 +719,12 @@ public class GSA implements LocalTransformer {
 				nUSafe[blk.id] = n;
 				xUSafe[blk.id] = x;
 			}
+		}
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk blk = (BasicBlk)p.elem();
+			System.out.println(":"+blk.id+":");
+			System.out.println("nUSafe : "+nUSafe[blk.id]);
+			System.out.println("nUSafe : "+xUSafe[blk.id]);
 		}
 	}
 	
@@ -705,18 +777,26 @@ public class GSA implements LocalTransformer {
 		return false;
 	}
 	
-	//TODO compReplaceメソッドの確認
+	public void compInsert(){
+		nInsert = new boolean[idBound];
+		xInsert = new boolean[idBound];
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			nInsert[blk.id] = nLatest[blk.id] && !nIsolated[blk.id];
+			xInsert[blk.id] = xLatest[blk.id] && !xIsolated[blk.id];
+		}
+	}
+	
+	
 	public void compReplace(){
 		nReplace = new boolean[idBound];
 		xReplace = new boolean[idBound];
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-			//TODO 条件の追加
-			nReplace[blk.id] = nIsSame[blk.id];
-			xReplace[blk.id] = xIsSame[blk.id];
+			nReplace[blk.id] = nIsSame[blk.id] && !(nLatest[blk.id] && nIsolated[blk.id]);
+			xReplace[blk.id] = xIsSame[blk.id] && !(xLatest[blk.id] && xIsolated[blk.id]);
 		}
-	}
-	
+	}	
 	
 	//TODO replaceメソッドの見直し
 	public void replace(LirNode newNode){
@@ -839,21 +919,32 @@ public class GSA implements LocalTransformer {
 		}		
 	}
 	
+	public void pde(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
+		compLocalProperty(node,addr,vars);
+		compDSafe();
+		if(dce(node.kid(0),addr,vars,blk)) {
+			p.unlink();
+		}else {
+			compUSafe();
+			compDSafe();
+//			compPartialSafe();//お前いらねぇっす
+			compEarliest(blk);
+			compKeepOrder();
+			compDelayed();
+			compLatest();
+//			compIsolated();
+//			compInsert();
+			compReplace();
+		}
+	}
+	
 	//TODO dceメソッドを完成させる
 	public boolean dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-		xEarliest = new boolean[idBound];
-		nEarliest = new boolean[idBound];
-		Arrays.fill(xEarliest, true);
-		Arrays.fill(nEarliest, true);
-		nEarliest[blk.id] = false;
-		for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
-			BasicBlk pred = (BasicBlk)q.elem();
-			xEarliest[pred.id] = false;
-		}
+		compEarliest(blk);
 //		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
 //			System.out.println("unlink");
