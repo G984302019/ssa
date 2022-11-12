@@ -928,11 +928,16 @@ public class GSA implements LocalTransformer {
 //		if(dce(node.kid(0),addr,vars,blk)) {
 //			p.unlink();
 //		}else {
+			System.out.println("---compUSafe---");
 			compUSafe();
 //			compPartialSafe();//お前いらねぇっす
+			System.out.println("---compEarliest---");
 			compEarliest(blk);
+			System.out.println("---compKeepOrder---");
 			compKeepOrder();
+			System.out.println("---compDelayed---");
 			compDelayed();
+			System.out.println("---compLatest---");
 			compLatest();
 //			compIsolated();
 //			compInsert();
