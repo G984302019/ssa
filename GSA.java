@@ -528,13 +528,13 @@ public class GSA implements LocalTransformer {
 				xDSafe[blk.id] = x;
 			}
 		}
-		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-			BasicBlk blk = (BasicBlk)p.elem();
-			System.out.println("++++++++++++++++++++++++++");
-			System.out.println(blk.id);
-			System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
-			System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
-		}
+//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+//			BasicBlk blk = (BasicBlk)p.elem();
+//			System.out.println("++++++++++++++++++++++++++");
+//			System.out.println(blk.id);
+//			System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
+//			System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
+//		}
 	}
 	
 	//いらなそうっすね。
@@ -896,6 +896,7 @@ public class GSA implements LocalTransformer {
 				LirNode node = (LirNode)p.elem();
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
 				System.out.println(node);
+				System.out.println("++++");
 //				System.out.println("+++++++++++");
 				insertNode.add(node.kid(0).makeCopy(env.lir));
 				//addrは変数名,a[1]=0だったらaが出る感じ
@@ -908,10 +909,12 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-				//TODO dceをbooleanで変えるようにする
-				if(dce(node.kid(0),addr,vars,blk)) {
-					p.unlink();
-				}
+				pde(node,addr,vars,blk,p);
+				
+//				if(dce(node.kid(0),addr,vars,blk)) {
+//					p.unlink();
+//				}
+				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
 //				if(newNode!=null) replace(newNode);
@@ -922,11 +925,10 @@ public class GSA implements LocalTransformer {
 	public void pde(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-		if(dce(node.kid(0),addr,vars,blk)) {
-			p.unlink();
-		}else {
+//		if(dce(node.kid(0),addr,vars,blk)) {
+//			p.unlink();
+//		}else {
 			compUSafe();
-			compDSafe();
 //			compPartialSafe();//お前いらねぇっす
 			compEarliest(blk);
 			compKeepOrder();
@@ -934,8 +936,8 @@ public class GSA implements LocalTransformer {
 			compLatest();
 //			compIsolated();
 //			compInsert();
-			compReplace();
-		}
+//			compReplace();
+//		}
 	}
 	
 	//TODO dceメソッドを完成させる
