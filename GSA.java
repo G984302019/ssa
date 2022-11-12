@@ -895,7 +895,7 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()) {
 				LirNode node = (LirNode)p.elem();
 				if(!isStore(node) || insertNode.contains(node.kid(0)) || !checkType(node))continue;
-				System.out.println(node);
+				System.out.println(blk.id+":"+node);
 				System.out.println("++++");
 //				System.out.println("+++++++++++");
 				insertNode.add(node.kid(0).makeCopy(env.lir));
