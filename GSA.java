@@ -441,25 +441,37 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xDelayed, true);
 		boolean change = true;
 		while(change) {
+			System.out.println("change");
 			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 				BasicBlk blk = (BasicBlk)p.elem();
 				boolean n = false;
+				System.out.println("blk:"+blk.id);
 				if(nEarliest[blk.id]) {
+					System.out.println("nEarliest");
 					n = true;
 				}else if(blk!=f.flowGraph().entryBlk()) {
 					n = true;
+					System.out.println("else");
 					for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()) {
 						BasicBlk pred = (BasicBlk)q.elem();
+						System.out.println("pred:"+pred.id);
 						if(!xDelayed[pred.id]) {
+							System.out.println("xDelayed");
 							n = false;
 							break;
 						}
 					}
+					System.out.println("forbreak");
 				}
 				boolean x = (n && !nIsSame[blk.id]) || xEarliest[blk.id];
 				if(nDelayed[blk.id]!=n || xDelayed[blk.id]!=x) change = true;
 				nDelayed[blk.id] = n;
 				xDelayed[blk.id] = x;
+			}
+			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+				BasicBlk blk = (BasicBlk)p.elem();
+				System.out.println(nDelayed[blk.id]);
+				System.out.println(xDelayed[blk.id]);
 			}
 		}
 //		while(change){
