@@ -947,10 +947,10 @@ public class GSA implements LocalTransformer {
 //			compPartialSafe();//お前いらねぇっす
 			System.out.println("---compEarliest---");
 			compEarliest(blk);
-//			System.out.println("---compKeepOrder---");
-//			compKeepOrder();
-//			System.out.println("---compDelayed---");
-//			compDelayed();
+			System.out.println("---compKeepOrder---");
+			compKeepOrder();
+			System.out.println("---compDelayed---");
+			compDelayed();
 //			System.out.println("---compLatest---");
 //			compLatest();
 			
