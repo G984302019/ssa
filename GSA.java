@@ -428,6 +428,12 @@ public class GSA implements LocalTransformer {
 			BasicBlk pred = (BasicBlk)q.elem();
 			xEarliest[pred.id] = false;
 		}
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk b = (BasicBlk)p.elem();
+			System.out.println(b.id+":n:"+nEarliest[b.id]);
+			System.out.println(b.id+":x:"+xEarliest[b.id]);			
+		}
+
 	}
 	
 	
@@ -945,12 +951,13 @@ public class GSA implements LocalTransformer {
 //			compPartialSafe();//お前いらねぇっす
 			System.out.println("---compEarliest---");
 			compEarliest(blk);
-			System.out.println("---compKeepOrder---");
-			compKeepOrder();
-			System.out.println("---compDelayed---");
-			compDelayed();
-			System.out.println("---compLatest---");
-			compLatest();
+//			System.out.println("---compKeepOrder---");
+//			compKeepOrder();
+//			System.out.println("---compDelayed---");
+//			compDelayed();
+//			System.out.println("---compLatest---");
+//			compLatest();
+			
 //			compIsolated();
 //			compInsert();
 //			compReplace();
