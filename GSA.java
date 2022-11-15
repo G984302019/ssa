@@ -392,7 +392,7 @@ public class GSA implements LocalTransformer {
 		return false;
 	}
 	
-	//TODO EarliestをPDE用に更新
+	//EarliestをPDE用に更新
 	//Earliestは変えていい。
 	//dceメソッドを呼び出したタイミングでEarliestをそのブロックでtrueに
 //	public void compEarliest() {
@@ -421,17 +421,13 @@ public class GSA implements LocalTransformer {
 	public void compEarliest(BasicBlk blk) {
 		xEarliest = new boolean[idBound];
 		nEarliest = new boolean[idBound];
-		Arrays.fill(xEarliest, true);
-		Arrays.fill(nEarliest, true);
-		nEarliest[blk.id] = false;
-		for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()){
-			BasicBlk pred = (BasicBlk)q.elem();
-			xEarliest[pred.id] = false;
-		}
+		Arrays.fill(xEarliest, false);
+		Arrays.fill(nEarliest, false);
+		nEarliest[blk.id] = true;
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
-			BasicBlk b = (BasicBlk)p.elem();
-			System.out.println(b.id+":n:"+nEarliest[b.id]);
-			System.out.println(b.id+":x:"+xEarliest[b.id]);			
+			BasicBlk bl = (BasicBlk)p.elem();
+			System.out.println(bl.id+":n:"+nEarliest[bl.id]);
+			System.out.println(bl.id+":x:"+xEarliest[bl.id]);			
 		}
 
 	}
