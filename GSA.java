@@ -931,7 +931,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-				pde(node,addr,vars,blk,p);
+				pde(node.kid(0),addr,vars,blk,p);
 				
 //				if(dce(node.kid(0),addr,vars,blk)) {
 //					p.unlink();
@@ -948,7 +948,7 @@ public class GSA implements LocalTransformer {
 		compLocalProperty(node,addr,vars);
 		System.out.println("---compDSafe---");
 		compDSafe();
-		if(dce(node.kid(0),addr,vars,blk)) {
+		if(dce(blk)) {
 			p.unlink();
 		}else {
 			System.out.println("---compUSafe---");
@@ -969,18 +969,22 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
-	//TODO dceメソッドを完成させる
+	
 	public boolean dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-		compEarliest(blk);
 //		System.out.println("\\\\dce\\\\");
 		if(!xDSafe[blk.id]) {
 //			System.out.println("unlink");
 			return true;
 		}
+		return false;
+	}
+	
+	public boolean dce(BasicBlk blk) {
+		if(!xDSafe[blk.id]) return true;
 		return false;
 	}
          
