@@ -443,6 +443,7 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xDelayed, true);
 		boolean change = true;
 		while(change) {
+			change = false;
 			System.out.println("change");
 			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 				BasicBlk blk = (BasicBlk)p.elem();
