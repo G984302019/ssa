@@ -943,6 +943,7 @@ public class GSA implements LocalTransformer {
 	
 	public void pde(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
 		compLocalProperty(node,addr,vars);
+		System.out.println("---compDSafe---");
 		compDSafe();
 		if(dce(node.kid(0),addr,vars,blk)) {
 			p.unlink();
