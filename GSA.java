@@ -444,38 +444,38 @@ public class GSA implements LocalTransformer {
 		boolean change = true;
 		while(change) {
 			change = false;
-			System.out.println("change");
+//			System.out.println("change");
 			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 				BasicBlk blk = (BasicBlk)p.elem();
 				boolean n = false;
-				System.out.println("blk:"+blk.id);
+//				System.out.println("blk:"+blk.id);
 				if(nEarliest[blk.id]) {
-					System.out.println("nEarliest");
+//					System.out.println("nEarliest");
 					n = true;
 				}else if(blk!=f.flowGraph().entryBlk()) {
 					n = true;
-					System.out.println("else");
+//					System.out.println("else");
 					for(BiLink q=blk.predList().first();!q.atEnd();q=q.next()) {
 						BasicBlk pred = (BasicBlk)q.elem();
-						System.out.println("pred:"+pred.id);
+//						System.out.println("pred:"+pred.id);
 						if(!xDelayed[pred.id]) {
-							System.out.println("xDelayed");
+//							System.out.println("xDelayed");
 							n = false;
 							break;
 						}
 					}
-					System.out.println("forbreak");
+//					System.out.println("forbreak");
 				}
 				boolean x = (n && !nIsSame[blk.id]) || xEarliest[blk.id];
 				if(nDelayed[blk.id]!=n || xDelayed[blk.id]!=x) change = true;
 				nDelayed[blk.id] = n;
 				xDelayed[blk.id] = x;
 			}
-			for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
-				BasicBlk blk = (BasicBlk)p.elem();
-				System.out.println(nDelayed[blk.id]);
-				System.out.println(xDelayed[blk.id]);
-			}
+		}
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk blk = (BasicBlk)p.elem();
+			System.out.println(blk.id+":n:"+nDelayed[blk.id]);
+			System.out.println(blk.id+":x:"+xDelayed[blk.id]);
 		}
 //		while(change){
 //			change = false;
@@ -542,6 +542,11 @@ public class GSA implements LocalTransformer {
 				nDSafe[blk.id] = n;
 				xDSafe[blk.id] = x;
 			}
+		}
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk blk = (BasicBlk)p.elem();
+			System.out.println(blk.id+":n:"+nDSafe[blk.id]);
+			System.out.println(blk.id+":x:"+xDSafe[blk.id]);
 		}
 //		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 //			BasicBlk blk = (BasicBlk)p.elem();
@@ -737,9 +742,8 @@ public class GSA implements LocalTransformer {
 		}
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 			BasicBlk blk = (BasicBlk)p.elem();
-			System.out.println(":"+blk.id+":");
-			System.out.println("nUSafe : "+nUSafe[blk.id]);
-			System.out.println("nUSafe : "+xUSafe[blk.id]);
+			System.out.println(blk.id+":n:"+nUSafe[blk.id]);
+			System.out.println(blk.id+":x:"+xUSafe[blk.id]);
 		}
 	}
 	
@@ -940,9 +944,9 @@ public class GSA implements LocalTransformer {
 	public void pde(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
 		compLocalProperty(node,addr,vars);
 		compDSafe();
-//		if(dce(node.kid(0),addr,vars,blk)) {
-//			p.unlink();
-//		}else {
+		if(dce(node.kid(0),addr,vars,blk)) {
+			p.unlink();
+		}else {
 			System.out.println("---compUSafe---");
 			compUSafe();
 //			compPartialSafe();//お前いらねぇっす
@@ -958,7 +962,7 @@ public class GSA implements LocalTransformer {
 //			compIsolated();
 //			compInsert();
 //			compReplace();
-//		}
+		}
 	}
 	
 	//TODO dceメソッドを完成させる
