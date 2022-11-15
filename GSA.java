@@ -426,10 +426,10 @@ public class GSA implements LocalTransformer {
 		nEarliest[blk.id] = true;
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 			BasicBlk bl = (BasicBlk)p.elem();
-			System.out.println(bl.id+":n:"+nEarliest[bl.id]);
-			System.out.println(bl.id+":x:"+xEarliest[bl.id]);			
+			System.out.println("+++"+bl.id+"+++");
+			System.out.println(":n:"+nEarliest[bl.id]);
+			System.out.println(":x:"+xEarliest[bl.id]);
 		}
-
 	}
 	
 	
@@ -474,8 +474,9 @@ public class GSA implements LocalTransformer {
 		}
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 			BasicBlk blk = (BasicBlk)p.elem();
-			System.out.println(blk.id+":n:"+nDelayed[blk.id]);
-			System.out.println(blk.id+":x:"+xDelayed[blk.id]);
+			System.out.println("+++"+blk.id+"+++");
+			System.out.println(":n:"+nDelayed[blk.id]);
+			System.out.println(":x:"+xDelayed[blk.id]);
 		}
 //		while(change){
 //			change = false;
@@ -545,8 +546,9 @@ public class GSA implements LocalTransformer {
 		}
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 			BasicBlk blk = (BasicBlk)p.elem();
-			System.out.println(blk.id+":n:"+nDSafe[blk.id]);
-			System.out.println(blk.id+":x:"+xDSafe[blk.id]);
+			System.out.println("+++"+blk.id+"+++");
+			System.out.println(":n:"+nDSafe[blk.id]);
+			System.out.println(":x:"+xDSafe[blk.id]);
 		}
 //		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 //			BasicBlk blk = (BasicBlk)p.elem();
@@ -742,8 +744,9 @@ public class GSA implements LocalTransformer {
 		}
 		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
 			BasicBlk blk = (BasicBlk)p.elem();
-			System.out.println(blk.id+":n:"+nUSafe[blk.id]);
-			System.out.println(blk.id+":x:"+xUSafe[blk.id]);
+			System.out.println("+++"+blk.id+"+++");
+			System.out.println(":n:"+nUSafe[blk.id]);
+			System.out.println(":x:"+xUSafe[blk.id]);
 		}
 	}
 	
