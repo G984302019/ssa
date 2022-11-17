@@ -271,10 +271,17 @@ public class GSA implements LocalTransformer {
 //    	System.out.println("isKill"+node);
 		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
 		//FRAME,STATIC,REG、
-		if(isStore(node))return true;
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
 //		System.out.println(false);
+		if(isStore(node)) {
+			LirNode addr = getAddr(expr);
+			if(sameAddr(node,addr)) {
+				return false;
+			}else {
+				return true;
+			}
+		}
 		return false;
 	}
     
@@ -580,8 +587,7 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
-	//TODO 行っていることと変える必要の確認
-	//
+	
 	public void compKeepOrder(){
 		nKeepOrder = new boolean[idBound];
 		xKeepOrder = new boolean[idBound];
