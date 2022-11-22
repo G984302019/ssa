@@ -332,8 +332,7 @@ public class GSA implements LocalTransformer {
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
-//		System.out.println("exp:");
-//		System.out.println(exp);
+		System.out.println("exp:"+exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			nIsSame[blk.id] = compNIsSame(exp,vars,blk,blkid,inst);//〇
@@ -349,8 +348,6 @@ public class GSA implements LocalTransformer {
 	
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk,int blkid,int inst){
 //		System.out.println("::NisSame"+blk.id);//
-		System.out.println("");
-		System.out.println("exp:"+exp);
 		int number = 0;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
