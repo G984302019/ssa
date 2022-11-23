@@ -344,6 +344,15 @@ public class GSA implements LocalTransformer {
 			//
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk,blkid,inst);
 		}
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			System.out.println("blk.id:"+blk.id);
+			if(nIsSame[blk.id]) System.out.println(nIsSame[blk.id]);
+			if(xIsSame[blk.id]) System.out.println(xIsSame[blk.id]);
+			if(Transp_e[blk.id]) System.out.println(Transp_e[blk.id]);
+			if(Transp_addr[blk.id]) System.out.println(Transp_addr[blk.id]);
+			if(xTransp_addr[blk.id]) System.out.println(xTransp_addr[blk.id]);
+		}
 	}
 	
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk,int blkid,int inst){
@@ -1026,8 +1035,9 @@ public class GSA implements LocalTransformer {
 		System.out.println("---compDSafe---");
 		compDSafe();
 		if(dce(blk)) {
+			System.out.println("!!!!!!dce!!!!!!!");
 			p.unlink();
-		}else {
+		}else{
 			System.out.println("---compUSafe---");
 			compUSafe();
 //			compPartialSafe();//お前いらねぇっす
@@ -1086,7 +1096,7 @@ public class GSA implements LocalTransformer {
 //      globalCodeMotion();
       displayBasicBlk();
       testGCM();
-      displayBasicBlk();
+//      displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
