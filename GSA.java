@@ -419,14 +419,11 @@ public class GSA implements LocalTransformer {
 //	}
 	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk,int blkid,int inst){
 //		System.out.println("::XisSame"+blk.id);//
-		int number=1;
-		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
-			number+=1;
-		}
+		int number=inst;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			number-=1;
-			if(blk.id==blkid&&number==inst)continue;
+			if(blk.id==blkid&&number==0)continue;
 //			System.out.println(node);//
 //			System.out.println("::isKill");//
 			if(isKill(exp,node,vars,blk,p))break;//
@@ -668,14 +665,11 @@ public class GSA implements LocalTransformer {
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk,int blkid,int inst){
 //		System.out.println("::compTranspe");//
 		boolean xt = true;
-		int number = 1;
-		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
-			number+=1;
-		}
+		int number = inst;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			number-=1;
-			if(blk.id==blkid&&number==inst)continue;
+			if(blk.id==blkid&&number==0)continue;
 //			System.out.println(node);//
 //			System.out.println(":iskill");//
 			//対象の配列のインスタンスを変更する可能性がある場合true;
@@ -724,14 +718,11 @@ public class GSA implements LocalTransformer {
 	//同様のストア命令に対する変更も、異なる配列への参照もない場合true;
 	//ノードは上げないからいらないかも
 	private boolean compXTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk,int blkid,int inst){
-		int number = 1;
-		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
-			number+=1;
-		}
+		int number = inst;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 			number-=1;
-			if(blk.id==blkid&&number==inst)continue;
+			if(blk.id==blkid&&number==0)continue;
 			if(isKill(exp,node,vars,blk,p))return false;
 			if(!isLoad(node)&&!isStore(node))continue;
 			if(sameAddr(node,addr)) break;
@@ -1017,11 +1008,11 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compDSafe();
-				pde(node.kid(0),addr,vars,blk,p,inst);
+//				pde(node.kid(0),addr,vars,blk,p,inst);
 				
-//				if(dce(node.kid(0),addr,vars,blk)) {
-//					p.unlink();
-//				}
+				if(dce(node.kid(0),addr,vars,blk,inst)) {
+					p.unlink();
+				}
 				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
@@ -1062,11 +1053,7 @@ public class GSA implements LocalTransformer {
 		compLocalProperty(node,addr,vars,blk.id,inst);
 		compDSafe();
 //		System.out.println("\\\\dce\\\\");
-		if(!xDSafe[blk.id]) {
-//			System.out.println("unlink");
-			return true;
-		}
-		return false;
+		return dce(blk);
 	}
 	
 	public boolean dce(BasicBlk blk) {
