@@ -347,11 +347,11 @@ public class GSA implements LocalTransformer {
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			System.out.println("blk.id:"+blk.id);
-			if(nIsSame[blk.id]) System.out.println(nIsSame[blk.id]);
-			if(xIsSame[blk.id]) System.out.println(xIsSame[blk.id]);
-			if(Transp_e[blk.id]) System.out.println(Transp_e[blk.id]);
-			if(Transp_addr[blk.id]) System.out.println(Transp_addr[blk.id]);
-			if(xTransp_addr[blk.id]) System.out.println(xTransp_addr[blk.id]);
+			if(nIsSame[blk.id]) System.out.println("nIsSame");
+			if(xIsSame[blk.id]) System.out.println("xIsSame");
+			if(Transp_e[blk.id]) System.out.println("Transp_e");
+			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
+			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
 		}
 	}
 	
