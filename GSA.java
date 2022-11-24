@@ -317,8 +317,10 @@ public class GSA implements LocalTransformer {
     
     //同様の配列参照をするload命令があった場合にtrue;
   	public boolean sameAddr(LirNode node, LirNode addr){
-  		if(!isLoad(node))return false;
-  		return (addr.equals(getAddr(node.kid(1))));
+  		if(!isLoad(node)||!isStore(node))return false;
+  		if(isLoad(node)) return (addr.equals(getAddr(node.kid(1))));
+  		if(isStore(node)) return (addr.equals(getAddr(node.kid(0))));
+  		return false;
   	}
     
     //最初にローカルプロパティを全て初期化する。
@@ -600,7 +602,7 @@ public class GSA implements LocalTransformer {
 //					System.out.println("___xIsSame___");//
 //					x = true;//
 //				}//
-				if(blk!=f.flowGraph().exitBlk()){
+				else if(blk!=f.flowGraph().exitBlk()){
 					x = false;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
 						BasicBlk succ = (BasicBlk)q.elem();
