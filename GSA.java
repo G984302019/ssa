@@ -897,18 +897,17 @@ public class GSA implements LocalTransformer {
 	
 	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
 	boolean checkLocal(LirNode node, LirNode addr, ArrayList localStore, ArrayList localAddr){
-//		System.out.println("[[[[checklocal]]]]");
-//		System.out.println("localStore");
+		System.out.println("localStore");//
 		if(localStore.contains(node.kid(0)))return true;
 		if(localAddr.contains(addr)){
-//			System.out.println("localAddr");
+			System.out.println("localAddr");//
 			int pos = localAddr.indexOf(addr);
-//			System.out.println("!!!!pos:"+pos+"!!!!");
+			System.out.println("!!!!pos:"+pos+"!!!!");//
 			for(int i=pos+1;i<localAddr.size();i++){
 				LirNode la = (LirNode)localAddr.get(i);
-//				System.out.println("----la:"+la+"----");
+				System.out.println("----la:"+la+"----");//
 				if(!la.equals(addr)){
-//					System.out.println("la.equals: true");
+					System.out.println("la.equals: true");//
 					return true;
 				}
 			}
@@ -922,27 +921,37 @@ public class GSA implements LocalTransformer {
 		BiLink latest = null;
 		for(BiLink q=p.next();!q.atEnd();q=q.next()){
 			LirNode node = (LirNode)q.elem();
+			System.out.println("isKill");
 			if(isKill(expr.kid(0),node,vars,blk,p))return false;
 			ArrayList nvars = new ArrayList();
 			collectVars(nvars,node);
+			System.out.println("conteins");
 			if(nvars.contains(expr.kid(0)))return false;
+			System.out.println("!isStore");
 			if(!isStore(node))continue;
+			System.out.println("equals");
 			if(node.kid(0).equals(expr.kid(0))){
+				System.out.println("unlink");
 				q.addBefore(expr.makeCopy(env.lir));
 				p.unlink();
 				return true;
 			}
 			LirNode node_addr = getAddr(node.kid(0));
+			System.out.println("node_addr");
 			if(node_addr.equals(addr)){
+				System.out.println("latest");
 				if(latest!=null){
+					System.out.println("unlink_latest");
 					latest.addBefore(expr.makeCopy(env.lir));
 					p.unlink();
 					return true;
 				}
 			}else{
+				System.out.println("else");
 				latest = q;
 			}
 		}
+		System.out.println("false:");
 		return false;
 	}
 			
@@ -956,11 +965,11 @@ public class GSA implements LocalTransformer {
 			ArrayList localAddr = new ArrayList();
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 				LirNode node = (LirNode)p.elem();
-				System.out.println("\\\\node:"+node+"\\\\");
-				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
-					localStore = new ArrayList();
-					localAddr = new ArrayList();
-				}
+				System.out.println("node:"+node);
+//				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
+//					localStore = new ArrayList();
+//					localAddr = new ArrayList();
+//				}
 				if(!isStore(node))continue;
 				LirNode addr = getAddr(node.kid(0));
 				System.out.println("~~~~addr:"+addr+"~~~~");
@@ -969,6 +978,7 @@ public class GSA implements LocalTransformer {
 				collectVars(vars,node.kid(0));
 				//checklocal
 				//localcm　同一の配列を纏めるための条件
+				System.out.println("[[[[checklocal]]]]");
 				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
 				//localload:b[0]の配列があったらb[0]を追加している。
 				//localaddr:b[0]の配列があったらbを追加している
