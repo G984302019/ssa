@@ -957,10 +957,10 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 				LirNode node = (LirNode)p.elem();
 				System.out.println("\\\\node:"+node+"\\\\");
-//				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
-//					localStore = new ArrayList();
-//					localAddr = new ArrayList();
-//				}
+				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
+					localStore = new ArrayList();
+					localAddr = new ArrayList();
+				}
 				if(!isStore(node))continue;
 				LirNode addr = getAddr(node.kid(0));
 				System.out.println("~~~~addr:"+addr+"~~~~");
