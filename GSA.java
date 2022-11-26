@@ -933,9 +933,8 @@ public class GSA implements LocalTransformer {
 			if(nvars.contains(expr.kid(0)))return false;
 			System.out.println("!isStore");
 			if(!isStore(node))continue;
-			System.out.println("equals");
 			if(node.kid(0).equals(expr.kid(0))){
-				System.out.println("unlink");
+				System.out.println("equals_unlink");
 				q.addBefore(expr.makeCopy(env.lir));
 				p.unlink();
 				return true;
