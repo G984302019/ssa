@@ -268,52 +268,52 @@ public class GSA implements LocalTransformer {
     //そのノードが削除できる可能性があるものなのかを判断するメソッド
     //a[i]=0の時のi,x=yの時のyなど変数の値を変更する可能性があるノード
     //TODO 同様の配列の場合はtrueにするようにする。例えばa[i]の時のa
-    public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
-//    	System.out.println("isKill"+node);
-		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
-		//FRAME,STATIC,REG、
-//		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
-		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
-//		System.out.println(false);
-		if(isStore(node)) {
-			LirNode addr = getAddr(expr);
-			if(sameAddr(node,addr)) {
-				return false;
-			}else {
-				return true;
-			}
-		}
-		return false;
-	}
-    
 //    public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 ////    	System.out.println("isKill"+node);
 //		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
 //		//FRAME,STATIC,REG、
 ////		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
-//		
 //		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
 ////		System.out.println(false);
 //		if(isStore(node)) {
-//			if(!sameAddress(node,expr) || vars.size() > 0) {
+//			LirNode addr = getAddr(expr);
+//			if(sameAddr(node,addr)) {
+//				return false;
+//			}else {
 //				return true;
 //			}
-//			
-//			ArrayList nvars = new ArrayList();
-//			collectVars(nvars,node.kid(0));//〇collectvars
-//			
-//			if(nvars.size() > 0) {
-//				return true;
-//			}
-////			LirNode addr = getAddr(expr);
-////			if(sameAddr(node,addr)) {
-////				return false;
-////			}else {
-////				return true;
-////			}
 //		}
 //		return false;
 //	}
+    
+    public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
+//    	System.out.println("isKill"+node);
+		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
+		//FRAME,STATIC,REG、
+//		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
+		
+		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
+//		System.out.println(false);
+		if(isStore(node)) {
+			if(!sameAddr(node,expr) || vars.size() > 0) {
+				return true;
+			}
+			
+			ArrayList nvars = new ArrayList();
+			collectVars(nvars,node.kid(0));//〇collectvars
+			
+			if(nvars.size() > 0) {
+				return true;
+			}
+//			LirNode addr = getAddr(expr);
+//			if(sameAddr(node,addr)) {
+//				return false;
+//			}else {
+//				return true;
+//			}
+		}
+		return false;
+	}
     
     //同様の配列参照を行っている場合true;
     LirNode getAddr(LirNode exp){
@@ -897,8 +897,9 @@ public class GSA implements LocalTransformer {
 	
 	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
 	boolean checkLocal(LirNode node, LirNode addr, ArrayList localStore, ArrayList localAddr){
-		System.out.println("localStore");//
+		System.out.println("[[[[checklocal]]]]");
 		if(localStore.contains(node.kid(0)))return true;
+		System.out.println("localStore");//
 		if(localAddr.contains(addr)){
 			System.out.println("localAddr");//
 			int pos = localAddr.indexOf(addr);
@@ -972,13 +973,11 @@ public class GSA implements LocalTransformer {
 //				}
 				if(!isStore(node))continue;
 				LirNode addr = getAddr(node.kid(0));
-				System.out.println("~~~~addr:"+addr+"~~~~");
 				ArrayList vars = new ArrayList();
-				System.out.println("++++vars:"+vars+"++++");
 				collectVars(vars,node.kid(0));
+				System.out.println("addr: "+addr+" :vars: "+vars);
 				//checklocal
 				//localcm　同一の配列を纏めるための条件
-				System.out.println("[[[[checklocal]]]]");
 				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
 				//localload:b[0]の配列があったらb[0]を追加している。
 				//localaddr:b[0]の配列があったらbを追加している
