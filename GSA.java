@@ -978,7 +978,8 @@ public class GSA implements LocalTransformer {
 				System.out.println("addr: "+addr+" :vars: "+vars);
 				//checklocal
 				//localcm　同一の配列を纏めるための条件
-				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
+//				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
+				System.out.println(":::::"+checkLocal(node,addr,localStore,localAddr));
 				//localload:b[0]の配列があったらb[0]を追加している。
 				//localaddr:b[0]の配列があったらbを追加している
 				localStore.add(node.kid(0).makeCopy(env.lir));
