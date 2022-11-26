@@ -962,6 +962,7 @@ public class GSA implements LocalTransformer {
 	public void localCodeMotion(){
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
+			System.out.println(blk.id);
 			ArrayList localStore = new ArrayList();
 			ArrayList localAddr = new ArrayList();
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
