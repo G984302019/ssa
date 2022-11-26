@@ -897,18 +897,18 @@ public class GSA implements LocalTransformer {
 	
 	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
 	boolean checkLocal(LirNode node, LirNode addr, ArrayList localStore, ArrayList localAddr){
-		System.out.println("checklocal:::::");
+//		System.out.println("checklocal:::::");
 		if(localStore.contains(node.kid(0)))return true;
-		System.out.println("localStore: "+localStore+": kid(0): "+node.kid(0));//
+//		System.out.println("localStore: "+localStore+": kid(0): "+node.kid(0));//
 		if(localAddr.contains(addr)){
-			System.out.println("localAddr: "+localAddr+": addr: "+addr);//
+//			System.out.println("localAddr: "+localAddr+": addr: "+addr);//
 			int pos = localAddr.indexOf(addr);
-			System.out.println("pos: "+pos);//
+//			System.out.println("pos: "+pos);//
 			for(int i=pos+1;i<localAddr.size();i++){
 				LirNode la = (LirNode)localAddr.get(i);
-				System.out.println("la: "+la);//
+//				System.out.println("la: "+la);//
 				if(!la.equals(addr)){
-					System.out.println("!la.equals: true");//
+//					System.out.println("!la.equals: true");//
 					return true;
 				}
 			}
@@ -976,11 +976,12 @@ public class GSA implements LocalTransformer {
 				LirNode addr = getAddr(node.kid(0));
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));
-				System.out.println("addr: "+addr+" :vars: "+vars);
+				System.out.println("addr: "+addr);
+				System.out.println("vars: "+vars);
 				//checklocal
 				//localcm　同一の配列を纏めるための条件
-//				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
-				System.out.println(":::::"+checkLocal(node,addr,localStore,localAddr));
+				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
+//				System.out.println(":::::"+checkLocal(node,addr,localStore,localAddr));
 				//localload:b[0]の配列があったらb[0]を追加している。
 				//localaddr:b[0]の配列があったらbを追加している
 				localStore.add(node.kid(0).makeCopy(env.lir));
