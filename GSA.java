@@ -919,6 +919,9 @@ public class GSA implements LocalTransformer {
 	//TODO localCMメソッドで行っていることの確認
 	boolean localCM(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk, BiLink p){
 		System.out.println("====localCM====");
+		System.out.println("node: "+(LirNode)p.elem());
+		System.out.println("addr: "+addr);
+		System.out.println("vars: "+vars);
 		BiLink latest = null;
 		for(BiLink q=p.next();!q.atEnd();q=q.next()){
 			LirNode node = (LirNode)q.elem();
@@ -967,7 +970,7 @@ public class GSA implements LocalTransformer {
 			ArrayList localAddr = new ArrayList();
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 				LirNode node = (LirNode)p.elem();
-				System.out.println("node:"+node);
+//				System.out.println("node:"+node);
 //				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
 //					localStore = new ArrayList();
 //					localAddr = new ArrayList();
@@ -976,8 +979,8 @@ public class GSA implements LocalTransformer {
 				LirNode addr = getAddr(node.kid(0));
 				ArrayList vars = new ArrayList();
 				collectVars(vars,node.kid(0));
-				System.out.println("addr: "+addr);
-				System.out.println("vars: "+vars);
+//				System.out.println("addr: "+addr);
+//				System.out.println("vars: "+vars);
 				//checklocal
 				//localcm　同一の配列を纏めるための条件
 				if(checkLocal(node,addr,localStore,localAddr)) localCM(node,addr,vars,blk,p);
