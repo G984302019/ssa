@@ -925,8 +925,10 @@ public class GSA implements LocalTransformer {
 		BiLink latest = null;
 		for(BiLink q=p.next();!q.atEnd();q=q.next()){
 			LirNode node = (LirNode)q.elem();
-			System.out.println("isKill");
-			if(!isStore(node)&&isKill(expr.kid(0),node,vars,blk,p))return false;
+			if(!isStore(node)&&isKill(expr.kid(0),node,vars,blk,p)) {
+				System.out.println("isKill");
+				return false;
+			}
 			ArrayList nvars = new ArrayList();
 			collectVars(nvars,node);
 			if(nvars.contains(expr.kid(0))) {
