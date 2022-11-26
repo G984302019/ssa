@@ -941,7 +941,8 @@ public class GSA implements LocalTransformer {
 			}
 			if(node.kid(0).equals(expr.kid(0))){
 				System.out.println("equals_unlink");
-				q.addBefore(expr.makeCopy(env.lir));
+				q.insertBefore(p);
+//				q.addBefore(expr.makeCopy(env.lir));
 				p.unlink();
 				return true;
 			}
@@ -950,7 +951,8 @@ public class GSA implements LocalTransformer {
 				System.out.println("node_addr");
 				if(latest!=null){
 					System.out.println("unlink_latest:"+(LirNode)latest.elem());
-					latest.addBefore(expr.makeCopy(env.lir));
+					latest.insertBefore(p);
+//					latest.addBefore(expr.makeCopy(env.lir));
 					p.unlink();
 					return true;
 				}
