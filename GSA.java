@@ -946,9 +946,8 @@ public class GSA implements LocalTransformer {
 				return true;
 			}
 			LirNode node_addr = getAddr(node.kid(0));
-			System.out.println("node_addr");
 			if(node_addr.equals(addr)){
-				System.out.println("latest");
+				System.out.println("node_addr");
 				if(latest!=null){
 					System.out.println("unlink_latest:"+(LirNode)latest.elem());
 					latest.addBefore(expr.makeCopy(env.lir));
