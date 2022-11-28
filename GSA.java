@@ -602,7 +602,7 @@ public class GSA implements LocalTransformer {
 					x = true;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()) {
 						BasicBlk succ = (BasicBlk)q.elem();
-						if(!nDSafe[succ.id]&&!Transp_addr[succ.id]) {
+						if(!nDSafe[succ.id]||!Transp_addr[succ.id]) {
 							x = false;
 						}
 					}
