@@ -599,7 +599,6 @@ public class GSA implements LocalTransformer {
 //				System.out.println(blk.id);//
 				boolean x = false;
 				if(xEarliest[blk.id]) {
-					
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()) {
 						BasicBlk succ = (BasicBlk)q.elem();
 						
@@ -636,13 +635,6 @@ public class GSA implements LocalTransformer {
 			System.out.println(":n:"+nDSafe[blk.id]);
 			System.out.println(":x:"+xDSafe[blk.id]);
 		}
-//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
-//			BasicBlk blk = (BasicBlk)p.elem();
-//			System.out.println("++++++++++++++++++++++++++");
-//			System.out.println(blk.id);
-//			System.out.println("nnnnnDSafe:"+nDSafe[blk.id]);
-//			System.out.println("xxxxxDSafe:"+xDSafe[blk.id]);
-//		}
 	}
 	
 	//いらなそうっすね。
@@ -975,10 +967,10 @@ public class GSA implements LocalTransformer {
 			for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 				LirNode node = (LirNode)p.elem();
 //				System.out.println("node:"+node);
-//				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
-//					localStore = new ArrayList();
-//					localAddr = new ArrayList();
-//				}
+				if(node.opCode==Op.CALL || (node.kid(0).opCode==Op.MEM && getAddr(node.kid(0)).opCode!=Op.FRAME)){
+					localStore = new ArrayList();
+					localAddr = new ArrayList();
+				}
 				if(!isStore(node))continue;
 				LirNode addr = getAddr(node.kid(0));
 				ArrayList vars = new ArrayList();
@@ -1045,14 +1037,15 @@ public class GSA implements LocalTransformer {
 //				System.out.println("node:"+node);
 //				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
-//				compLocalProperty(node.kid(0),addr,vars);
-//				compDSafe();
+				compLocalProperty(node.kid(0),addr,vars);
+				compEarliest(blk);
+				compDSafe();
 //				pde(node.kid(0),addr,vars,blk,p);
 				
-				if(dce(node.kid(0),addr,vars,blk)) {
-					System.out.println("!!!!!!dce!!!!!!!");
-					p.unlink();
-				}
+//				if(dce(node.kid(0),addr,vars,blk)) {
+//					System.out.println("!!!!!!dce!!!!!!!");
+//					p.unlink();
+//				}
 				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
@@ -1127,10 +1120,10 @@ public class GSA implements LocalTransformer {
       bVecInOrderOfRPost = dfst.blkVectorByRPost();
       
       displayBasicBlk();
-      localCodeMotion();
+//      localCodeMotion();
 //      globalCodeMotion();
-      displayBasicBlk();
-//      testGCM();
+//      displayBasicBlk();
+      testGCM();
 //      displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
