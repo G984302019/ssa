@@ -353,15 +353,15 @@ public class GSA implements LocalTransformer {
 			//
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
 		}
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-			BasicBlk blk = bVecInOrderOfRPost[i];
-			System.out.println("blk.id:"+blk.id);
-			if(nIsSame[blk.id]) System.out.println("nIsSame");
-			if(xIsSame[blk.id]) System.out.println("xIsSame");
-			if(Transp_e[blk.id]) System.out.println("Transp_e");
-			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
-			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
-		}
+//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+//			BasicBlk blk = bVecInOrderOfRPost[i];
+//			System.out.println("blk.id:"+blk.id);
+//			if(nIsSame[blk.id]) System.out.println("nIsSame");
+//			if(xIsSame[blk.id]) System.out.println("xIsSame");
+//			if(Transp_e[blk.id]) System.out.println("Transp_e");
+//			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
+//			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
+//		}
 	}
 	
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
@@ -1037,15 +1037,15 @@ public class GSA implements LocalTransformer {
 //				System.out.println("node:"+node);
 //				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
-				compLocalProperty(node.kid(0),addr,vars);
-				compEarliest(blk);
-				compDSafe();
+//				compLocalProperty(node.kid(0),addr,vars);
+//				compEarliest(blk);
+//				compDSafe();
 //				pde(node.kid(0),addr,vars,blk,p);
 				
-//				if(dce(node.kid(0),addr,vars,blk)) {
-//					System.out.println("!!!!!!dce!!!!!!!");
-//					p.unlink();
-//				}
+				if(dce(node.kid(0),addr,vars,blk)) {
+					System.out.println("!!!!!!dce!!!!!!!");
+					p.unlink();
+				}
 				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
