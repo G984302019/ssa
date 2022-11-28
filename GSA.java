@@ -599,9 +599,12 @@ public class GSA implements LocalTransformer {
 //				System.out.println(blk.id);//
 				boolean x = false;
 				if(xEarliest[blk.id]) {
+					x = true;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()) {
 						BasicBlk succ = (BasicBlk)q.elem();
-						
+						if(!nDSafe[succ.id]&&!Transp_addr[succ.id]) {
+							x = false;
+						}
 					}
 				}
 				else if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
@@ -1124,7 +1127,7 @@ public class GSA implements LocalTransformer {
 //      globalCodeMotion();
 //      displayBasicBlk();
       testGCM();
-//      displayBasicBlk();
+      displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
