@@ -1124,10 +1124,10 @@ public class GSA implements LocalTransformer {
       bVecInOrderOfRPost = dfst.blkVectorByRPost();
       
       displayBasicBlk();
-//      localCodeMotion();
+      localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
-      testGCM();
+//      testGCM();
       displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
