@@ -598,17 +598,7 @@ public class GSA implements LocalTransformer {
 				BasicBlk blk = (BasicBlk)p.elem(); 
 //				System.out.println(blk.id);//
 				boolean x = false;
-				if(xEarliest[blk.id]) {
-					x = true;
-					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()) {
-						BasicBlk succ = (BasicBlk)q.elem();
-						if(!nDSafe[succ.id]&&!Transp_addr[succ.id]) {
-							System.out.println(blk.id+"++++++++++++++++++++++");
-							x = false;
-						}
-					}
-				}
-				else if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
+				if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
 //				if(xIsSame[blk.id]) {//
 //					System.out.println("___xIsSame___");//
 //					x = true;//
@@ -1098,7 +1088,16 @@ public class GSA implements LocalTransformer {
 	}
 	
 	public boolean dce(BasicBlk blk) {
-		if(!xDSafe[blk.id]) return true;
+		if(!xDSafe[blk.id])return true;
+		else if(xEarliest[blk.id]&&Transp_addr[blk.id]) {
+			for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
+				BasicBlk succ = (BasicBlk)q.elem();
+				if(nDSafe[succ.id]) {
+					return false;
+				}
+			}
+			return true;
+		}
 		return false;
 	}
          
@@ -1124,10 +1123,10 @@ public class GSA implements LocalTransformer {
       bVecInOrderOfRPost = dfst.blkVectorByRPost();
       
       displayBasicBlk();
-      localCodeMotion();
+//      localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
-//      testGCM();
+      testGCM();
       displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
