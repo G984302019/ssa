@@ -297,9 +297,9 @@ public class GSA implements LocalTransformer {
 		if(isStore(node)) {
 //			if(!sameAddr(node,expr) || vars.size() > 0) {
 			if(sameAddr(node,getAddr(expr)))return false;
-			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
-				return true;
-			}
+//			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
+//				return true;
+//			}
 			
 			ArrayList nvars = new ArrayList();
 			collectVars(nvars,node.kid(0));//〇collectvars
