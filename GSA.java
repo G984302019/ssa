@@ -353,15 +353,15 @@ public class GSA implements LocalTransformer {
 			//
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
 		}
-//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-//			BasicBlk blk = bVecInOrderOfRPost[i];
-//			System.out.println("blk.id:"+blk.id);
-//			if(nIsSame[blk.id]) System.out.println("nIsSame");
-//			if(xIsSame[blk.id]) System.out.println("xIsSame");
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			System.out.println("blk.id:"+blk.id);
+			if(nIsSame[blk.id]) System.out.println("nIsSame");
+			if(xIsSame[blk.id]) System.out.println("xIsSame");
 //			if(Transp_e[blk.id]) System.out.println("Transp_e");
-//			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
+			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
 //			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
-//		}
+		}
 	}
 	
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
@@ -502,12 +502,12 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xEarliest, false);
 		Arrays.fill(nEarliest, false);
 		xEarliest[blk.id] = true;
-//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
-//			BasicBlk bl = (BasicBlk)p.elem();
-//			System.out.println("+++"+bl.id+"+++");
-//			System.out.println(":n:"+nEarliest[bl.id]);
-//			System.out.println(":x:"+xEarliest[bl.id]);
-//		}
+		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+			BasicBlk bl = (BasicBlk)p.elem();
+			System.out.println("+++"+bl.id+"+++");
+			System.out.println(":n:"+nEarliest[bl.id]);
+			System.out.println(":x:"+xEarliest[bl.id]);
+		}
 	}
 	
 	
