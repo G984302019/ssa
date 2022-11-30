@@ -502,12 +502,12 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xEarliest, false);
 		Arrays.fill(nEarliest, false);
 		xEarliest[blk.id] = true;
-		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
-			BasicBlk bl = (BasicBlk)p.elem();
-			System.out.println("+++"+bl.id+"+++");
-			System.out.println(":n:"+nEarliest[bl.id]);
-			System.out.println(":x:"+xEarliest[bl.id]);
-		}
+//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
+//			BasicBlk bl = (BasicBlk)p.elem();
+//			System.out.println("+++"+bl.id+"+++");
+//			System.out.println(":n:"+nEarliest[bl.id]);
+//			System.out.println(":x:"+xEarliest[bl.id]);
+//		}
 	}
 	
 	
