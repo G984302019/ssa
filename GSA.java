@@ -358,9 +358,12 @@ public class GSA implements LocalTransformer {
 			System.out.println("blk.id:"+blk.id);
 			if(nIsSame[blk.id]) System.out.println("nIsSame");
 			if(xIsSame[blk.id]) System.out.println("xIsSame");
-//			if(Transp_e[blk.id]) System.out.println("Transp_e");
+			if(Transp_e[blk.id]) System.out.println("Transp_e");
 			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
-//			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
+			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
+			if(nSameAddr[blk.id]) System.out.println("nSameAddr");
+			if(xSameAddr[blk.id]) System.out.println("xSameAddr");
+			
 		}
 	}
 	
@@ -1089,7 +1092,7 @@ public class GSA implements LocalTransformer {
 	
 	public boolean dce(BasicBlk blk) {
 		if(!xDSafe[blk.id])return true;
-		else if(xEarliest[blk.id]&&Transp_addr[blk.id]) {
+		else if(xEarliest[blk.id]&&xTransp_addr[blk.id]) {
 			for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
 				BasicBlk succ = (BasicBlk)q.elem();
 				if(nDSafe[succ.id]) {
