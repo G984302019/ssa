@@ -363,7 +363,6 @@ public class GSA implements LocalTransformer {
 			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
 			if(nSameAddr[blk.id]) System.out.println("nSameAddr");
 			if(xSameAddr[blk.id]) System.out.println("xSameAddr");
-			
 		}
 	}
 	
@@ -393,14 +392,9 @@ public class GSA implements LocalTransformer {
 //			if(isLoad(node)) System.out.println("kid1 same?"+node.kid(1).equals(exp));
 //			System.out.println("store?"+isStore(node));
 //			if(isStore(node)) System.out.println("kid0 same?"+node.kid(0).equals(exp));
-			
-			if(isLoad(node) && node.kid(1).equals(exp)) {
-				return true;
-			}
-			
-			if(isStore(node) && node.kid(0).equals(exp)) {
-				return true;
-			}
+			if(!isLoad(node)&&!isStore(node))continue;
+			if(isLoad(node) && node.kid(1).equals(exp)) return true;
+			if(isStore(node) && node.kid(0).equals(exp)) return true;
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
 		return false;
@@ -460,13 +454,9 @@ public class GSA implements LocalTransformer {
 				return true;
 			}
 			*/
-			if(isLoad(node) && node.kid(1).equals(exp)) {
-				return true;
-			}
-			
-			if(isStore(node) && node.kid(0).equals(exp)) {
-				return true;
-			}
+			if(!isLoad(node)&&!isStore(node))continue;
+			if(isLoad(node) && node.kid(1).equals(exp)) return true;
+			if(isStore(node) && node.kid(0).equals(exp)) return true;
 				
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
@@ -614,7 +604,7 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = nIsSame[blk.id] || x && Transp_e[blk.id];
+				boolean n = (nIsSame[blk.id] || x) && Transp_e[blk.id];
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
@@ -671,7 +661,8 @@ public class GSA implements LocalTransformer {
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("::compTranspe");//
 		boolean xt = true;
-		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+//		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {//
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
 //			System.out.println(":iskill");//
@@ -684,7 +675,7 @@ public class GSA implements LocalTransformer {
 //			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
 //			System.out.println(":sameaddr");//
-			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
+//			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 //			if(xSameAddr[blk.id]) System.out.println("xsameaddr");
 		}
 //		System.out.println("++++"+xt+"++++");
@@ -722,7 +713,10 @@ public class GSA implements LocalTransformer {
 			LirNode node = (LirNode)p.elem();
 			if(isKill(exp,node,vars,blk,p))return false;
 			if(!isLoad(node)&&!isStore(node))continue;
-			if(sameAddr(node,addr)) break;
+			if(sameAddr(node,addr)) {
+				xSameAddr[blk.id] = true;
+				break;
+			}
 			else return false;
 		}
 		return true;
