@@ -295,7 +295,8 @@ public class GSA implements LocalTransformer {
 		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
 //		System.out.println(false);
 		if(isStore(node)) {
-			if(!sameAddr(node,expr) || vars.size() > 0) {
+//			if(!sameAddr(node,expr) || vars.size() > 0) {
+			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
 				return true;
 			}
 			
@@ -305,6 +306,8 @@ public class GSA implements LocalTransformer {
 			if(nvars.size() > 0) {
 				return true;
 			}
+			
+			
 //			LirNode addr = getAddr(expr);
 //			if(sameAddr(node,addr)) {
 //				return false;
