@@ -355,7 +355,7 @@ public class GSA implements LocalTransformer {
 		}
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
-			System.out.println("blk.id:"+blk.id);
+			System.out.println(blk.id+":id");
 			if(nIsSame[blk.id]) System.out.println("nIsSame");
 			if(xIsSame[blk.id]) System.out.println("xIsSame");
 			if(Transp_e[blk.id]) System.out.println("Transp_e");
@@ -505,12 +505,8 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xEarliest, false);
 		Arrays.fill(nEarliest, false);
 		xEarliest[blk.id] = true;
-//		for(BiLink p=f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()) {
-//			BasicBlk bl = (BasicBlk)p.elem();
-//			System.out.println("+++"+bl.id+"+++");
-//			System.out.println(":n:"+nEarliest[bl.id]);
-//			System.out.println(":x:"+xEarliest[bl.id]);
-//		}
+		System.out.println("+++"+blk.id+"+++");
+		System.out.println(":xEarliest:"+xEarliest[blk.id]);
 	}
 	
 	
@@ -618,7 +614,7 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = nIsSame[blk.id] || x && Transp_addr[blk.id];
+				boolean n = nIsSame[blk.id] || x && Transp_e[blk.id];
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
