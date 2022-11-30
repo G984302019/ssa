@@ -296,6 +296,7 @@ public class GSA implements LocalTransformer {
 //		System.out.println(false);
 		if(isStore(node)) {
 //			if(!sameAddr(node,expr) || vars.size() > 0) {
+			if(sameAddr(node,getAddr(expr)))return false;
 			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
 				return true;
 			}
@@ -664,8 +665,8 @@ public class GSA implements LocalTransformer {
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("::compTranspe");//
 		boolean xt = true;
-//		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
-		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {//
+		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+//		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {//
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
 //			System.out.println(":iskill");//
@@ -678,7 +679,7 @@ public class GSA implements LocalTransformer {
 //			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
 //			System.out.println(":sameaddr");//
-//			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
+			if(sameAddr(node,addr)) xSameAddr[blk.id] = true;
 //			if(xSameAddr[blk.id]) System.out.println("xsameaddr");
 		}
 //		System.out.println("++++"+xt+"++++");
@@ -717,7 +718,6 @@ public class GSA implements LocalTransformer {
 			if(isKill(exp,node,vars,blk,p))return false;
 			if(!isLoad(node)&&!isStore(node))continue;
 			if(sameAddr(node,addr)) {
-				xSameAddr[blk.id] = true;
 				break;
 			}
 			else return false;
