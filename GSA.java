@@ -295,11 +295,11 @@ public class GSA implements LocalTransformer {
 		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
 //		System.out.println(false);
 		if(isStore(node)) {
-//			if(!sameAddr(node,expr) || vars.size() > 0) {
-			if(sameAddr(node,getAddr(expr)))return false;
+			if(!sameAddr(node,expr) || vars.size() > 0) {
+//			if(sameAddr(node,getAddr(expr)))return false;//
 //			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
-//				return true;
-//			}
+				return true;
+			}
 			
 			ArrayList nvars = new ArrayList();
 			collectVars(nvars,node.kid(0));//〇collectvars
@@ -1122,10 +1122,10 @@ public class GSA implements LocalTransformer {
       
       displayBasicBlk();
       
-//      localCodeMotion();
+      localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
-      testGCM();
+//      testGCM();
       displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
