@@ -1007,8 +1007,8 @@ public class GSA implements LocalTransformer {
 	private void testGCM() {
 	//varsは添え字の中の変数
 		ArrayList insertNode = new ArrayList();
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-//		for(int i=bVecInOrderOfRPost.length-1;i>0;i--) {
+//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+		for(int i=bVecInOrderOfRPost.length-1;i>0;i--) {
 //		for(BiLink pp=f.flowGraph().basicBlkList.last();!pp.atEnd();pp=pp.prev()) {//
 			BasicBlk blk = bVecInOrderOfRPost[i];
 //			BasicBlk blk = (BasicBlk)pp.elem();//
