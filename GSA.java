@@ -596,7 +596,7 @@ public class GSA implements LocalTransformer {
 					System.out.println("___xIsSame___xSameAddr___");//
 					x = true;//
 				}//
-				else if(blk!=f.flowGraph().exitBlk()){
+				if(blk!=f.flowGraph().exitBlk()){
 					System.out.println("__!exit__");
 					x = false;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
