@@ -397,8 +397,8 @@ public class GSA implements LocalTransformer {
 //			System.out.println("store?"+isStore(node));
 //			if(isStore(node)) System.out.println("kid0 same?"+node.kid(0).equals(exp));
 			if(!isLoad(node)&&!isStore(node))continue;
-			if(isLoad(node) && node.kid(1).equals(exp)) return true;
-			if(isStore(node) && node.kid(0).equals(exp)) return true;
+			if(node.kid(1).equals(exp)) return true;
+			if(node.kid(0).equals(exp)) return true;
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
 		return false;
@@ -459,8 +459,8 @@ public class GSA implements LocalTransformer {
 			}
 			*/
 			if(!isLoad(node)&&!isStore(node))continue;
-			if(isLoad(node) && node.kid(1).equals(exp)) return true;
-			if(isStore(node) && node.kid(0).equals(exp)) return true;
+			if(node.kid(1).equals(exp)) return true;
+			if(node.kid(0).equals(exp)) return true;
 				
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
@@ -1029,15 +1029,15 @@ public class GSA implements LocalTransformer {
 //				System.out.println("node:"+node);
 //				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
-//				compLocalProperty(node.kid(0),addr,vars);
+				compLocalProperty(node.kid(0),addr,vars);
 //				compEarliest(blk);
 //				compDSafe();
 //				pde(node.kid(0),addr,vars,blk,p);
 				
-				if(dce(node.kid(0),addr,vars,blk)) {
-					System.out.println("!!!!!!dce!!!!!!!");
-					p.unlink();
-				}
+//				if(dce(node.kid(0),addr,vars,blk)) {
+//					System.out.println("!!!!!!dce!!!!!!!");
+//					p.unlink();
+//				}
 				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
