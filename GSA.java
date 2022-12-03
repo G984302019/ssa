@@ -302,10 +302,11 @@ public class GSA implements LocalTransformer {
 		}
 //		System.out.println(false);
 		if(isStore(node)) {
-			if(!sameAddr(node,expr) || vars.size() > 0) {
+			if(sameAddr(node,expr) || vars.size() > 0) {
 //			if(sameAddr(node,getAddr(expr)))return false;//
 //			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
-				System.out.println("++true++sameaddr");
+				if(sameAddr(node,expr)) System.out.println("++true++!sameaddr");
+				if(vars.size()>0)System.out.println("++true++vars.size()>0");
 				return true;
 			}
 			
