@@ -287,17 +287,25 @@ public class GSA implements LocalTransformer {
 //	}
     
     public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
-//    	System.out.println("isKill"+node);
-		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
-		//FRAME,STATIC,REG、
+    	System.out.println("---isKill---"+node);
+//		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
+		if(node.opCode==Op.CALL) {//
+			System.out.println("++true++CALL");//
+			return true;
+		}
+    	//FRAME,STATIC,REG、
 //		if(node.opCode==Op.SET && node.kid(0).opCode==Op.MEM && ddalias.checkAlias(expr, node.kid(0), blk, p))return true;
 		
-		if(vars.contains(node.kid(0)))return true;// conectvarsメソッドと共に何を確認しているかのチェック
+		if(vars.contains(node.kid(0))) {
+			System.out.println("++true++contains");
+			return true;// conectvarsメソッドと共に何を確認しているかのチェック
+		}
 //		System.out.println(false);
 		if(isStore(node)) {
-//			if(!sameAddr(node,expr) || vars.size() > 0) {
-			if(sameAddr(node,getAddr(expr)))return false;//
-			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
+			if(!sameAddr(node,expr) || vars.size() > 0) {
+//			if(sameAddr(node,getAddr(expr)))return false;//
+//			if(!sameAddr(node,getAddr(expr)) || vars.size() > 0) {//
+				System.out.println("++true++sameaddr");
 				return true;
 			}
 			
@@ -305,6 +313,7 @@ public class GSA implements LocalTransformer {
 			collectVars(nvars,node.kid(0));//〇collectvars
 			
 			if(nvars.size() > 0) {
+				System.out.println("++true++nvars");
 				return true;
 			}
 			
@@ -316,6 +325,7 @@ public class GSA implements LocalTransformer {
 //				return true;
 //			}
 		}
+		System.out.println("++false++");
 		return false;
 	}
     
