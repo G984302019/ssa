@@ -381,21 +381,21 @@ public class GSA implements LocalTransformer {
 			//
 			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
 		}
-//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-//			BasicBlk blk = bVecInOrderOfRPost[i];
-//			System.out.println(blk.id+":id");
-//			if(nIsSame[blk.id]) System.out.println("nIsSame");
-//			if(xIsSame[blk.id]) System.out.println("xIsSame");
-//			if(Transp_e[blk.id]) System.out.println("Transp_e");
-//			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
-//			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
-//			if(nSameAddr[blk.id]) System.out.println("nSameAddr");
-//			if(xSameAddr[blk.id]) System.out.println("xSameAddr");
-//		}
+		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+			BasicBlk blk = bVecInOrderOfRPost[i];
+			System.out.println(blk.id+":id");
+			if(nIsSame[blk.id]) System.out.println("nIsSame");
+			if(xIsSame[blk.id]) System.out.println("xIsSame");
+			if(Transp_e[blk.id]) System.out.println("Transp_e");
+			if(Transp_addr[blk.id]) System.out.println("Transp_addr");
+			if(xTransp_addr[blk.id]) System.out.println("xTransp_addr");
+			if(nSameAddr[blk.id]) System.out.println("nSameAddr");
+			if(xSameAddr[blk.id]) System.out.println("xSameAddr");
+		}
 	}
 	
 	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::NisSame"+blk.id);//
+//		System.out.println("::NisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);
@@ -458,7 +458,7 @@ public class GSA implements LocalTransformer {
 //		return false;
 //	}
 	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
-		System.out.println("::XisSame"+blk.id);//
+//		System.out.println("::XisSame"+blk.id);//
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
@@ -687,7 +687,7 @@ public class GSA implements LocalTransformer {
 	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
 	//またxsameaddrの更新
 	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
-		System.out.println("::compTranspe");//
+//		System.out.println("::compTranspe");//
 		boolean xt = true;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 //		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()) {//
@@ -712,7 +712,7 @@ public class GSA implements LocalTransformer {
 	
 	//同様のストア命令に対する変更も、同様の配列と同様の番地へのロード命令もなければtrue;
 	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
-		System.out.println("::compTranspAddr");//
+//		System.out.println("::compTranspAddr");//
 		if(!Transp_e[blk.id])return false;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
