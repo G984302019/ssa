@@ -632,7 +632,7 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = (nIsSame[blk.id] || x);
+				boolean n = (nIsSame[blk.id] || x) && Transp_e[blk.id];
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
