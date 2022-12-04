@@ -613,15 +613,15 @@ public class GSA implements LocalTransformer {
 			change = false;
 			for(BiLink p=f.flowGraph().basicBlkList.last();!p.atEnd();p=p.prev()){
 				BasicBlk blk = (BasicBlk)p.elem(); 
-//				System.out.println(blk.id);//
+				System.out.println("---"+blk.id+"---");//
 				boolean x = false;
 //				if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
 				if(xIsSame[blk.id]||xSameAddr[blk.id]) {//
 					System.out.println("___xIsSame___xSameAddr___");//
 					x = true;//
 				}//
-				if(blk!=f.flowGraph().exitBlk()){
-					System.out.println("__!exit__");
+				else if(blk!=f.flowGraph().exitBlk()){
+//					System.out.println("__!exit__");
 					x = false;
 					for(BiLink q=blk.succList().first();!q.atEnd();q=q.next()){
 						BasicBlk succ = (BasicBlk)q.elem();
