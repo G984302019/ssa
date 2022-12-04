@@ -1053,15 +1053,15 @@ public class GSA implements LocalTransformer {
 //				System.out.println("node:"+node);
 //				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
-				compLocalProperty(node.kid(0),addr,vars);
-				compEarliest(blk);
-				compDSafe();
+//				compLocalProperty(node.kid(0),addr,vars);
+//				compEarliest(blk);
+//				compDSafe();
 //				pde(node.kid(0),addr,vars,blk,p);
 				
-//				if(dce(node.kid(0),addr,vars,blk)) {
-//					System.out.println("!!!!!!dce!!!!!!!");
-//					p.unlink();
-//				}
+				if(dce(node.kid(0),addr,vars,blk)) {
+					System.out.println("!!!!!!dce!!!!!!!");
+					p.unlink();
+				}
 				
 //				printGlobalProp(node);
 //				LirNode newNode = insertNewNode(node,addr,vars);
