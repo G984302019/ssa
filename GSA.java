@@ -1076,8 +1076,8 @@ public class GSA implements LocalTransformer {
 //				pde(node.kid(0),addr,vars,blk,p,node);
 				
 				if(dce(node.kid(0),addr,vars,blk,node)) {
-					System.out.println("!!!!!!dce!!!!!!!");
-					p.unlink();
+//					System.out.println("!!!!!!dce!!!!!!!");
+//					p.unlink();
 				}
 				
 //				printGlobalProp(node);
