@@ -486,7 +486,6 @@ public class GSA implements LocalTransformer {
 			if(!isLoad(node)&&!isStore(node))continue;
 			if(node.kid(1).equals(exp)) return true;
 			if(node.kid(0).equals(exp)) return true;
-				
 		}
 //		System.out.println("--FalseFalseFalseFalse--");
 		return false;
@@ -636,7 +635,7 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = nIsSame[blk.id] || x;
+				boolean n = nIsSame[blk.id] || x && Transp_e[blk.id];
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
@@ -664,6 +663,7 @@ public class GSA implements LocalTransformer {
 			}
 			if(isKill(exp,same,vars,blk,p)) break;
 		}
+		System.out.println(lcDSafe);
 	}
 	
 	//いらなそうっすね。
@@ -741,7 +741,8 @@ public class GSA implements LocalTransformer {
 			if(sameAddr(node,addr)){
 //				System.out.println(":");//
 				nSameAddr[blk.id] = true;
-				if(node.kid(1).equals(exp)) break;
+				break;
+//				if(node.kid(1).equals(exp)) break;
 			}else{
 //				System.out.println("^^^^false^^^^");//
 				return false;
