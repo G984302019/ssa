@@ -327,7 +327,7 @@ public class GSA implements LocalTransformer {
 			collectVars(nvars,node.kid(0));//〇collectvars
 			
 //			if(nvars.size() > 0) {
-			if(sameAddr(node,getAddr(expr)) && nvars.size()>0) {	
+			if(sameAddr(node,getAddr(expr)) && nvars.size()>0) {//	
 //				System.out.println("++true++nvars");
 				return true;
 			}
@@ -1167,10 +1167,10 @@ public class GSA implements LocalTransformer {
       
       displayBasicBlk();
       
-//      localCodeMotion();
+      localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
-      testGCM();
+//      testGCM();
       displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
