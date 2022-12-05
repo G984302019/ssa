@@ -56,6 +56,7 @@ public class GSA implements LocalTransformer {
 	public BasicBlk[] bVecInOrderOfRPost;
     
     int idBound;
+    boolean lcDSafe;
 	boolean[] nSameAddr;
 	boolean[] xSameAddr;
 	boolean[] nIsSame;
@@ -616,7 +617,10 @@ public class GSA implements LocalTransformer {
 				System.out.println("---"+blk.id+"---");//
 				boolean x = false;
 //				if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
-				if(xIsSame[blk.id]||xSameAddr[blk.id]) {//
+				if(xEarliest[blk.id]) {
+					x = lcDSafe;
+				}
+				else if(xIsSame[blk.id]||xSameAddr[blk.id]) {//
 					System.out.println("___xIsSame___xSameAddr___");//
 					x = true;//
 				}//
@@ -647,6 +651,18 @@ public class GSA implements LocalTransformer {
 			System.out.println("+++"+blk.id+"+++");
 			System.out.println(":n:"+nDSafe[blk.id]);
 			System.out.println(":x:"+xDSafe[blk.id]);
+		}
+	}
+	
+	public void complcDSafe(LirNode node, LirNode exp, ArrayList vars, BasicBlk blk){
+		lcDSafe = true;
+		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
+			LirNode same = (LirNode)p.elem();
+			if(node.equals(same)) {
+				lcDSafe = false;
+				break;
+			}
+			if(isKill(exp,same,vars,blk,p)) break;
 		}
 	}
 	
@@ -1056,9 +1072,9 @@ public class GSA implements LocalTransformer {
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compEarliest(blk);
 //				compDSafe();
-//				pde(node.kid(0),addr,vars,blk,p);
+//				pde(node.kid(0),addr,vars,blk,p,node);
 				
-				if(dce(node.kid(0),addr,vars,blk)) {
+				if(dce(node.kid(0),addr,vars,blk,node)) {
 					System.out.println("!!!!!!dce!!!!!!!");
 					p.unlink();
 				}
@@ -1070,10 +1086,12 @@ public class GSA implements LocalTransformer {
 		}		
 	}
 	
-	public void pde(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
+	public void pde(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p,LirNode node) {
 		compLocalProperty(expr,addr,vars);
 		System.out.println("---compEarliest---");
 		compEarliest(blk);
+		System.out.println("---complcDSafe---");
+		complcDSafe(node,expr,vars,blk);
 		System.out.println("---compDSafe---");
 		compDSafe();
 		if(dce(blk)) {
@@ -1097,12 +1115,14 @@ public class GSA implements LocalTransformer {
 	}
 	
 	
-	public boolean dce(LirNode node, LirNode addr, ArrayList vars, BasicBlk blk) {
+	public boolean dce(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk, LirNode node) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		compLocalProperty(node,addr,vars);
+		compLocalProperty(expr,addr,vars);
 		System.out.println("---compEarliest---");
 		compEarliest(blk);
+		System.out.println("---complcDSafe---");
+		complcDSafe(node,expr,vars,blk);
 		System.out.println("---compDSafe---");
 		compDSafe();
 //		System.out.println("\\\\dce\\\\");
