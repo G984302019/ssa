@@ -524,8 +524,8 @@ public class GSA implements LocalTransformer {
 		Arrays.fill(xEarliest, false);
 		Arrays.fill(nEarliest, false);
 		xEarliest[blk.id] = true;
-		System.out.println("+++"+blk.id+"+++");
-		System.out.println(":xEarliest:"+xEarliest[blk.id]);
+//		System.out.println("+++"+blk.id+"+++");
+//		System.out.println(":xEarliest:"+xEarliest[blk.id]);
 	}
 	
 	
