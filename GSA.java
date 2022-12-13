@@ -1319,13 +1319,13 @@ public class GSA implements LocalTransformer {
       idBound = f.flowGraph().idBound();
       bVecInOrderOfRPost = dfst.blkVectorByRPost();
       
-//      displayBasicBlk();
+      displayBasicBlk();
       
       localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
       testGCM();
-//      displayBasicBlk();
+      displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
