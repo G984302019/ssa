@@ -340,20 +340,27 @@ public class GSA implements LocalTransformer {
 //				if(vars.size()>0)System.out.println("++true++vars.size()>0");
 //				return true;
 //			}
-			if(!sameAddr(node,getAddr(expr)))return false;
+//			if(!sameAddr(node,getAddr(expr)))return false;
 			
-			if(isGlobalPointer(node)) return true;
+//			if(isGlobalPointer(node)) return true;
 			
-			if(sameAddr(node,getAddr(expr)) && vars.size()>0) {
-				return true;
-			}
+//			if(sameAddr(node,getAddr(expr)) && vars.size()>0) {
+//				return true;
+//			}
 			
 			ArrayList nvars = new ArrayList();
 			collectVars(nvars,node.kid(0));//〇collectvars
 			
 //			if(nvars.size() > 0) {
-			if(sameAddr(node,getAddr(expr)) && nvars.size()>0) {//	
+//			if(sameAddr(node,getAddr(expr)) && nvars.size()>0) {//	
 //				System.out.println("++true++nvars");
+//				return true;
+//			}
+			
+			if(!sameAddress(node,expr) || vars.size() > 0) {
+				return true;
+			}
+			if(nvars.size() > 0) {
 				return true;
 			}
 			
