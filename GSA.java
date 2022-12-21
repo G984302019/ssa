@@ -317,10 +317,12 @@ public class GSA implements LocalTransformer {
 //		return false;
 //	}
     
-    public boolean isKill(LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
+    public boolean isKill(LirNode noden, LirNode expr, LirNode node, ArrayList vars, BasicBlk blk, BiLink p){
 //    	System.out.println("---isKill---"+node);
 //		if(node.opCode==Op.CALL)return true;//何らかの関数呼び出しがあった場合に問答無用でtrueにする。
-		if(node.opCode==Op.CALL) {//
+		if(noden.equals(node))return false;
+    	
+    	if(node.opCode==Op.CALL) {//
 //			System.out.println("++true++CALL");//
 			return true;
 		}
@@ -421,7 +423,7 @@ public class GSA implements LocalTransformer {
   	}
     
     //最初にローカルプロパティを全て初期化する。
-	void compLocalProperty(LirNode exp, LirNode addr, ArrayList vars){
+	void compLocalProperty(LirNode noden, LirNode exp, LirNode addr, ArrayList vars){
 		xSameAddr = new boolean[idBound];
 		nSameAddr = new boolean[idBound];
 		nUse = new boolean[idBound];
@@ -433,25 +435,25 @@ public class GSA implements LocalTransformer {
 		xTransp_addr = new boolean[idBound];
 		Arrays.fill(xSameAddr, false);
 		Arrays.fill(nSameAddr, false);
-		System.out.println("exp:"+exp);
+//		System.out.println("exp:"+exp);
 		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 			BasicBlk blk = bVecInOrderOfRPost[i];
 			
-			nUse[blk.id] = compNUse(exp,addr,vars,blk);
-			xUse[blk.id] = compXUse(exp,addr,vars,blk);
+			nUse[blk.id] = compNUse(noden,exp,addr,vars,blk);
+			xUse[blk.id] = compXUse(noden,exp,addr,vars,blk);
 			
-			nIsSame[blk.id] = compNIsSame(exp,vars,blk);//〇
-			xIsSame[blk.id] = compXIsSame(exp,vars,blk);//〇
+			nIsSame[blk.id] = compNIsSame(noden,exp,vars,blk);//〇
+			xIsSame[blk.id] = compXIsSame(noden,exp,vars,blk);//〇
 			
-			nSameAddr[blk.id] = isNSameAddr(exp,vars,blk);
-			xSameAddr[blk.id] = isXSameAddr(exp,vars,blk);
+			nSameAddr[blk.id] = isNSameAddr(noden,exp,vars,blk);
+			xSameAddr[blk.id] = isXSameAddr(noden,exp,vars,blk);
 			
 			//変数のkillが内科のチェック
-			Transp_e[blk.id] = compTranspe(exp,addr,vars,blk);
+			Transp_e[blk.id] = compTranspe(noden,exp,addr,vars,blk);
 			//配列のアクセス順序が崩れていないかのチェック。
-			Transp_addr[blk.id] = compTranspAddr(exp,addr,vars,blk);
+			Transp_addr[blk.id] = compTranspAddr(noden,exp,addr,vars,blk);
 			//
-			xTransp_addr[blk.id] = compXTranspAddr(exp,addr,vars,blk);
+			xTransp_addr[blk.id] = compXTranspAddr(noden,exp,addr,vars,blk);
 		}
 //		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
 //			BasicBlk blk = bVecInOrderOfRPost[i];
@@ -466,13 +468,13 @@ public class GSA implements LocalTransformer {
 //		}
 	}
 	
-	private boolean isNSameAddr(LirNode exp, ArrayList vars, BasicBlk blk) {
+	private boolean isNSameAddr(LirNode noden, LirNode exp, ArrayList vars, BasicBlk blk) {
 		for (BiLink p = blk.instrList().first(); !p.atEnd(); p = p.next()) {
 			LirNode node = (LirNode) p.elem();
 			if(isStore(node) && sameAddress(node.kid(0),exp))return true;//
-			else if(isKill(exp,node,vars,blk,p))return false;//
+			else if(isKill(noden,exp,node,vars,blk,p))return false;//
 			else if(isLoad(node) && sameAddress(node.kid(1),exp))return true;//
-//			if (isKill(exp,node,vars,blk,p)) {
+//			if (isKill(noden,exp,node,vars,blk,p)) {
 //				return false;
 //			} else if(isLoad(node) && sameAddress(node.kid(1),exp)) {
 //				return true;
@@ -488,13 +490,13 @@ public class GSA implements LocalTransformer {
 		return addr1.equals(addr2);
 	}
 	
-	private boolean isXSameAddr(LirNode exp, ArrayList vars, BasicBlk blk) {
+	private boolean isXSameAddr(LirNode noden, LirNode exp, ArrayList vars, BasicBlk blk) {
 		for (BiLink p = blk.instrList().last(); !p.atEnd(); p = p.prev()) {
 			LirNode node = (LirNode) p.elem();
 			if(isStore(node) && sameAddress(node.kid(0),exp))return true;//
-			else if(isKill(exp,node,vars,blk,p))return false;//
+			else if(isKill(noden,exp,node,vars,blk,p))return false;//
 			else if(isLoad(node) && sameAddress(node.kid(1),exp))return true;//
-//			if (isKill(exp,node,vars,blk,p)) {
+//			if (isKill(noden,exp,node,vars,blk,p)) {
 //				return false;
 //			} else if(isLoad(node) && sameAddress(node.kid(1),exp)) {
 //				return true;
@@ -505,14 +507,14 @@ public class GSA implements LocalTransformer {
 		return false;
 	}	
 	
-	private boolean compNIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
+	private boolean compNIsSame(LirNode noden,LirNode exp, ArrayList vars, BasicBlk blk){
 //		System.out.println("::NisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){//渡された基本ブロックの命令をひとつづつ確認している
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);
 //			System.out.println(":isKill");
 			if(isStore(node) && node.kid(0).equals(exp)) return true;//
-			if(isKill(exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
+			if(isKill(noden,exp,node,vars,blk,p))break;//isKillがtrueだったらループ終了
 			
 			/*
 //			System.out.println(":isLoad");//
@@ -568,14 +570,14 @@ public class GSA implements LocalTransformer {
 ////		System.out.println("--FalseFalseFalseFalse--");
 //		return false;
 //	}
-	private boolean compXIsSame(LirNode exp, ArrayList vars, BasicBlk blk){
+	private boolean compXIsSame(LirNode noden, LirNode exp, ArrayList vars, BasicBlk blk){
 //		System.out.println("::XisSame"+blk.id);//
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
 //			System.out.println("::isKill");//
 			if(isStore(node) && node.kid(0).equals(exp))return true;
-			if(isKill(exp,node,vars,blk,p))break;//
+			if(isKill(noden,exp,node,vars,blk,p))break;//
 			//式の右辺を確認しようとしている。
 			//ロード命令省かなくてもいい。
 //			System.out.println(":isLoad");//
@@ -626,7 +628,7 @@ public class GSA implements LocalTransformer {
 //		}
 //	}
 	
-	private boolean compNUse(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+	private boolean compNUse(LirNode noden, LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("::XisSame"+blk.id);//
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
@@ -636,7 +638,7 @@ public class GSA implements LocalTransformer {
 //			System.out.println("exp:" + exp);
 //			System.out.println("isSame?"+(isStore(node) && node.kid(0).equals(exp)));
 //			System.out.println("::isKill");//
-			if(isKill(exp,node,vars,blk,p))break;//
+			if(isKill(noden,exp,node,vars,blk,p))break;//
 			
 			if(isLoad(node)) {
 				if(node.kid(1).equals(exp)) {
@@ -653,7 +655,7 @@ public class GSA implements LocalTransformer {
 		return false;
 	}
 	
-	private boolean compXUse(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+	private boolean compXUse(LirNode noden, LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("@compXUse. blk:"+blk.id);
 		
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
@@ -669,7 +671,7 @@ public class GSA implements LocalTransformer {
 //				System.out.println("isSame?" + node.kid(1).equals(exp));
 //				System.out.println("isAddr?" + sameAddr(node,addr));
 //			}
-			if(isKill(exp,node,vars,blk,p))break;//
+			if(isKill(noden,exp,node,vars,blk,p))break;//
 			
 			if(isLoad(node)) {
 				if(node.kid(1).equals(exp)) {
@@ -874,7 +876,7 @@ public class GSA implements LocalTransformer {
 
 	//同様のインスタンスを持つ配列へのストア命令があった場合にfalse,
 	//またxsameaddrの更新
-	private boolean compTranspe(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+	private boolean compTranspe(LirNode noden, LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("::compTranspe");//
 		boolean xt = true;
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
@@ -883,11 +885,11 @@ public class GSA implements LocalTransformer {
 //			System.out.println(node);//
 //			System.out.println(":iskill");//
 			//対象の配列のインスタンスを変更する可能性がある場合true;
-			if(isKill(exp,node,vars,blk,p)){
+			if(isKill(noden,exp,node,vars,blk,p)){
 //				System.out.println("----false----");
 				xt = false;
 				break;
-			}
+			}else if(noden.equals(node))return true;
 //			System.out.println(":isload_isstore");//
 			if(!isLoad(node)&&!isStore(node))continue;
 //			System.out.println(":sameaddr");//
@@ -899,15 +901,16 @@ public class GSA implements LocalTransformer {
 	}
 	
 	//同様のストア命令に対する変更も、同様の配列と同様の番地へのロード命令もなければtrue;
-	private boolean compTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+	private boolean compTranspAddr(LirNode noden, LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 //		System.out.println("::compTranspAddr");//
 		if(!Transp_e[blk.id])return false;
 		for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
 			LirNode node = (LirNode)p.elem();
 //			System.out.println(node);//
 //			System.out.println(":isKill");//
-			if(isKill(exp,node,vars,blk,p))return false;
+			if(isKill(noden,exp,node,vars,blk,p))return false;
 //			System.out.println(":isload&&isstore");//
+			if(noden.equals(node))return true;
 			if(!isLoad(node)&&!isStore(node))continue;
 //			System.out.println(":sameaddr");//
 			if(sameAddr(node,addr)){
@@ -924,10 +927,15 @@ public class GSA implements LocalTransformer {
 	
 	//同様のストア命令に対する変更も、異なる配列への参照もない場合true;
 	//ノードは上げないからいらないかも
-	private boolean compXTranspAddr(LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
+	private boolean compXTranspAddr(LirNode noden, LirNode exp, LirNode addr, ArrayList vars, BasicBlk blk){
 		for(BiLink p=blk.instrList().last();!p.atEnd();p=p.prev()){
 			LirNode node = (LirNode)p.elem();
-			if(isKill(exp,node,vars,blk,p))return false;
+//			if(isStore(node)) {//
+//				if(sameAddr(node,addr))break;//
+//				else return false;//
+//			}//
+			if(isKill(noden,exp,node,vars,blk,p))return false;
+			if(noden.equals(node))return true;
 			if(!isLoad(node)&&!isStore(node))continue;
 			if(sameAddr(node,addr)) break;
 			else return false;
@@ -1119,7 +1127,7 @@ public class GSA implements LocalTransformer {
 		BiLink latest = null;
 		for(BiLink q=p.next();!q.atEnd();q=q.next()){
 			LirNode node = (LirNode)q.elem();
-			if(!isStore(node)&&isKill(expr.kid(0),node,vars,blk,p)) {
+			if(!isStore(node)&&isKill(expr,expr.kid(0),node,vars,blk,p)) {
 				System.out.println("isKill");
 				return false;
 			}
@@ -1245,7 +1253,7 @@ public class GSA implements LocalTransformer {
 //				compDSafe();
 //				pde(node.kid(0),addr,vars,blk,p,node);
 				
-				if(dce(node.kid(0),addr,vars,blk,node)) {
+				if(dce(node,node.kid(0),addr,vars,blk)) {
 //					System.out.println("!!!!!!dce!!!!!!!");
 					p.unlink();
 				}
@@ -1257,8 +1265,8 @@ public class GSA implements LocalTransformer {
 		}		
 	}
 	
-	public void pde(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p,LirNode node) {
-		compLocalProperty(expr,addr,vars);
+	public void pde(LirNode noden,LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk,BiLink p) {
+		compLocalProperty(noden,expr,addr,vars);
 		System.out.println("---compEarliest---");
 		compEarliest(blk);
 		System.out.println("---compDSafe---");
@@ -1284,10 +1292,10 @@ public class GSA implements LocalTransformer {
 	}
 	
 	
-	public boolean dce(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk, LirNode node) {
+	public boolean dce(LirNode noden, LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
-		compLocalProperty(expr,addr,vars);
+		compLocalProperty(noden,expr,addr,vars);
 		System.out.println("---compEarliest---");
 		compEarliest(blk);
 		System.out.println("---compDSafe---");
