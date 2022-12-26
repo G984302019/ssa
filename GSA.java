@@ -787,7 +787,7 @@ public class GSA implements LocalTransformer {
 //				System.out.println("---"+blk.id+"---");//
 				boolean x = false;
 //				if(xIsSame[blk.id]||xSameAddr[blk.id]) x = true;
-				if(xIsSame[blk.id])x=true;
+				if(xIsSame[blk.id]||xSameAddr[blk.id])x=true;
 				else if(blk!=f.flowGraph().exitBlk()){
 //					System.out.println("__!exit__");
 					x = false;
@@ -800,7 +800,7 @@ public class GSA implements LocalTransformer {
 						}
 					}
 				}
-				boolean n = nIsSame[blk.id] || x;
+				boolean n = nIsSame[blk.id]|| nSameAddr[blk.id] || x;
 				if(nDSafe[blk.id]!=n || xDSafe[blk.id]!=x) change = true;
 //				if(change) {
 //					if(nDSafe[blk.id]!=n) System.out.println("^^^nnn^^^"+n);
