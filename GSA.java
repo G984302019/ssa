@@ -1245,8 +1245,8 @@ public class GSA implements LocalTransformer {
 				//varsは添え字、a[x]=0だったらxが出る感じ
 				if(addr.opCode != Op.FRAME)continue;
 				ArrayList vars = new ArrayList();
-//				System.out.println("node:"+node);
-//				System.out.println("blk.id:"+blk.id);
+				System.out.println("node:"+node);
+				System.out.println("blk.id:"+blk.id);
 				collectVars(vars,node.kid(0));//〇collectvars
 //				compLocalProperty(node.kid(0),addr,vars);
 //				compEarliest(blk);
@@ -1291,6 +1291,26 @@ public class GSA implements LocalTransformer {
 		}
 	}
 	
+	public void dcedisplay() {
+		for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
+			   BasicBlk v=(BasicBlk)p.elem();
+			   System.out.println(" "+v.id+" :blk.id");
+			   System.out.println("nUse--------:"+nUse[v.id]);
+			   System.out.println("xUse:-------:"+xUse[v.id]);
+			   System.out.println("nIsSame-----:"+nIsSame[v.id]);
+			   System.out.println("xIsSame-----:"+xIsSame[v.id]);
+			   System.out.println("nSameAddr---:"+nSameAddr[v.id]);
+			   System.out.println("xSameAddr---:"+xSameAddr[v.id]);
+			   System.out.println("Transp_e----:"+Transp_e[v.id]);
+			   System.out.println("nTransp_addr:"+Transp_addr[v.id]);
+			   System.out.println("xTransp_addr:"+xTransp_addr[v.id]);
+			   System.out.println("nDSafe------:"+nDSafe[v.id]);
+			   System.out.println("xDSafe------:"+xDSafe[v.id]);
+			   System.out.println("pNDSafe-----:"+pNDSafe[v.id]);
+			   System.out.println("pXDSafe-----:"+pXDSafe[v.id]);
+		 }
+	}
+	
 	
 	public boolean dce(LirNode noden, LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk) {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
@@ -1303,6 +1323,7 @@ public class GSA implements LocalTransformer {
 		System.out.println("---compPartialDSafe---");
 		compPartialDSafe();
 //		System.out.println("\\\\dce\\\\");
+		dcedisplay();
 		boolean isTarget = dce(blk);
 		return isTarget;
 	}
@@ -1343,7 +1364,7 @@ public class GSA implements LocalTransformer {
       
       displayBasicBlk();
       
-      localCodeMotion();
+//      localCodeMotion();
 //      globalCodeMotion();
 //      displayBasicBlk();
       testGCM();
@@ -1485,3 +1506,5 @@ public class GSA implements LocalTransformer {
 //        }
 //    }
 //}
+
+//complete
