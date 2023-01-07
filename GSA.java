@@ -1292,6 +1292,7 @@ public class GSA implements LocalTransformer {
 	}
 	
 	public void dcedisplay() {
+		System.out.println(" ---DISPLAY---");
 		for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 			   BasicBlk v=(BasicBlk)p.elem();
 			   System.out.println(" "+v.id+" :blk.id");
@@ -1316,11 +1317,11 @@ public class GSA implements LocalTransformer {
         //for文でIsSameを各ノードに適用させながら、compDSafeを適用させ、除去できるかを判定。dceに結果を格納する。
         //exitノードで結果がtrueだったのなら除去可能。
 		compLocalProperty(noden,expr,addr,vars);
-		System.out.println("---compEarliest---");
+//		System.out.println("---compEarliest---");
 		compEarliest(blk);
-		System.out.println("---compDSafe---");
+//		System.out.println("---compDSafe---");
 		compDSafe();
-		System.out.println("---compPartialDSafe---");
+//		System.out.println("---compPartialDSafe---");
 		compPartialDSafe();
 //		System.out.println("\\\\dce\\\\");
 		dcedisplay();
