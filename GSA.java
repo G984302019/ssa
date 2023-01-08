@@ -2948,9 +2948,9 @@ public class GSA implements LocalTransformer {
       
 //      localCodeMotion();
 //      globalCodeMotion();
-//      displayBasicBlk();
+      displayBasicBlk();
       testGCM();
-//      displayBasicBlk();
+      displayBasicBlk();
       
 //         		LirNode newStat = createNewStatement(node);
 //         		p.addBefore(newStat);
