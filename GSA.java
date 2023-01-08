@@ -2586,20 +2586,20 @@ public class GSA implements LocalTransformer {
 		return (type=='I' || type=='F');
 	}
 	
-	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
-	boolean checkLocal(LirNode node, LirNode addr, ArrayList localLoad, ArrayList localAddr){
-		if(localLoad.contains(node.kid(1)))return true;
-		if(localAddr.contains(addr)){
-			int pos = localAddr.indexOf(addr);
-			for(int i=pos+1;i<localAddr.size();i++){
-				LirNode la = (LirNode)localAddr.get(i);
-				if(!la.equals(addr)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+//	//冗長な配列参照かabaのようなアクセス順が崩れている物があるかをチェックしている
+//	boolean checkLocal(LirNode node, LirNode addr, ArrayList localLoad, ArrayList localAddr){
+//		if(localLoad.contains(node.kid(1)))return true;
+//		if(localAddr.contains(addr)){
+//			int pos = localAddr.indexOf(addr);
+//			for(int i=pos+1;i<localAddr.size();i++){
+//				LirNode la = (LirNode)localAddr.get(i);
+//				if(!la.equals(addr)){
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
 		
 	//TODO localCMメソッドで行っていることの確認
 	boolean localCM(LirNode expr, LirNode addr, ArrayList vars, BasicBlk blk, BiLink p){
@@ -2703,32 +2703,32 @@ public class GSA implements LocalTransformer {
 	
 	//TODO localCodeMotionメソッドの見直し
 	//一つの節内での移動
-	public void localCodeMotion(){
-		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
-			BasicBlk blk = bVecInOrderOfRPost[i];
-			ArrayList localLoad = new ArrayList();
-			ArrayList localAddr = new ArrayList();
-			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
-				LirNode node = (LirNode)p.elem();
-				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
-					localLoad = new ArrayList();
-					localAddr = new ArrayList();
-				}
-				if(!isStore(node))continue;
-				LirNode addr = getAddr(node.kid(0));
-				ArrayList vars = new ArrayList();
-				collectVars(vars,node.kid(0));
-				//checklocal
-				//localcm　同一の配列を纏めるための条件
-				if(checkLocal(node,addr,localLoad,localAddr)) localCM(node,addr,vars,blk,p);
-				if(!isStore(node)) continue;
-				//localload:b[0]の配列があったらb[0]を追加している。
-				//localaddr:b[0]の配列があったらbを追加している
-				localLoad.add(node.kid(0).makeCopy(env.lir));
-				localAddr.add(addr.makeCopy(env.lir));
-			}
-		}
-	}
+//	public void localCodeMotion(){
+//		for(int i=1;i<bVecInOrderOfRPost.length; i++) {
+//			BasicBlk blk = bVecInOrderOfRPost[i];
+//			ArrayList localLoad = new ArrayList();
+//			ArrayList localAddr = new ArrayList();
+//			for(BiLink p=blk.instrList().first();!p.atEnd();p=p.next()){
+//				LirNode node = (LirNode)p.elem();
+//				if(node.opCode==Op.CALL || node.kid(0).opCode==Op.MEM){
+//					localLoad = new ArrayList();
+//					localAddr = new ArrayList();
+//				}
+//				if(!isStore(node))continue;
+//				LirNode addr = getAddr(node.kid(0));
+//				ArrayList vars = new ArrayList();
+//				collectVars(vars,node.kid(0));
+//				//checklocal
+//				//localcm　同一の配列を纏めるための条件
+//				if(checkLocal(node,addr,localLoad,localAddr)) localCM(node,addr,vars,blk,p);
+//				if(!isStore(node)) continue;
+//				//localload:b[0]の配列があったらb[0]を追加している。
+//				//localaddr:b[0]の配列があったらbを追加している
+//				localLoad.add(node.kid(0).makeCopy(env.lir));
+//				localAddr.add(addr.makeCopy(env.lir));
+//			}
+//		}
+//	}
 	
 	//TODO globalCodeMotionメソッドの見直し
 //	private void globalCodeMotion(){
