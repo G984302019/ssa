@@ -291,7 +291,7 @@ public class GSA implements LocalTransformer {
     }
     
     public boolean isGlobalPointer(LirNode node) {
-    	if(isStore(node)&&getAddr(node).opCode == Op.FRAME)return true;
+    	if(isStore(node)&&getAddr(node).opCode != Op.FRAME)return true;
     	return false;
     }
     
