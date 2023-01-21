@@ -1403,19 +1403,19 @@ public class GSA implements LocalTransformer {
 		for(BiLink p =f.flowGraph().basicBlkList.first();!p.atEnd();p=p.next()){
 			   BasicBlk v=(BasicBlk)p.elem();
 			   System.out.println(" "+v.id+" :blk.id");
-			   System.out.println("nUse--------:"+nUse[v.id]);
-			   System.out.println("xUse:-------:"+xUse[v.id]);
-			   System.out.println("nIsSame-----:"+nIsSame[v.id]);
-			   System.out.println("xIsSame-----:"+xIsSame[v.id]);
-			   System.out.println("nSameAddr---:"+nSameAddr[v.id]);
-			   System.out.println("xSameAddr---:"+xSameAddr[v.id]);
-			   System.out.println("Transp_e----:"+Transp_e[v.id]);
-			   System.out.println("nTransp_addr:"+Transp_addr[v.id]);
-			   System.out.println("xTransp_addr:"+xTransp_addr[v.id]);
-			   System.out.println("nDSafe------:"+nDSafe[v.id]);
-			   System.out.println("xDSafe------:"+xDSafe[v.id]);
-			   System.out.println("pNDSafe-----:"+pNDSafe[v.id]);
-			   System.out.println("pXDSafe-----:"+pXDSafe[v.id]);
+			   if(nUse[v.id])System.out.println("nUse--------:"+nUse[v.id]);
+			   if(xUse[v.id])System.out.println("xUse:-------:"+xUse[v.id]);
+			   if(nIsSame[v.id])System.out.println("nIsSame-----:"+nIsSame[v.id]);
+			   if(xIsSame[v.id])System.out.println("xIsSame-----:"+xIsSame[v.id]);
+			   if(nSameAddr[v.id])System.out.println("nSameAddr---:"+nSameAddr[v.id]);
+			   if(xSameAddr[v.id])System.out.println("xSameAddr---:"+xSameAddr[v.id]);
+			   if(Transp_e[v.id])System.out.println("Transp_e----:"+Transp_e[v.id]);
+			   if(Transp_addr[v.id])System.out.println("nTransp_addr:"+Transp_addr[v.id]);
+			   if(xTransp_addr[v.id])System.out.println("xTransp_addr:"+xTransp_addr[v.id]);
+			   if(nDSafe[v.id])System.out.println("nDSafe------:"+nDSafe[v.id]);
+			   if(xDSafe[v.id])System.out.println("xDSafe------:"+xDSafe[v.id]);
+			   if(pNDSafe[v.id])System.out.println("pNDSafe-----:"+pNDSafe[v.id]);
+			   if(pXDSafe[v.id])System.out.println("pXDSafe-----:"+pXDSafe[v.id]);
 		 }
 	}
 	
