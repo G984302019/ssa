@@ -1431,7 +1431,7 @@ public class GSA implements LocalTransformer {
 //		System.out.println("---compPartialDSafe---");
 		compPartialDSafe();
 //		System.out.println("\\\\dce\\\\");
-//		dcedisplay();
+		dcedisplay();
 		boolean isTarget = dce(blk);
 		return isTarget;
 	}
